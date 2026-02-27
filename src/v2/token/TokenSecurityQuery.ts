@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 
 export const TokenSecurityQuery = z.object({
   blockchain: z.string().optional(),
@@ -17,4 +18,15 @@ export const TokenSecurityQuery = z.object({
   }, z.boolean().optional()),
 });
 
-export type TokenSecurityQueryType = z.input<typeof TokenSecurityQuery>;
+const TOKEN_SECURITY_HIDDEN = ['instanceTracking', '_forceAnalysis'] as const;
+type TokenSecurityHiddenFields = (typeof TOKEN_SECURITY_HIDDEN)[number];
+
+export type TokenSecurityQueryType = SDKInput<typeof TokenSecurityQuery, TokenSecurityHiddenFields>;
+
+export const TokenSecurityQueryOpenAPI = createOpenAPIParams(TokenSecurityQuery, {
+  omit: [...TOKEN_SECURITY_HIDDEN],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    address: 'Token contract address',
+  },
+});

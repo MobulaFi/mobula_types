@@ -159,6 +159,36 @@ export const SearchParamsSchema = z.object({
 export type SearchParams = z.input<typeof SearchParamsSchema>;
 export type SearchInferType = z.infer<typeof SearchParamsSchema>;
 
+// OpenAPI variant: only expose camelCase sortBy values, hide 'og' mode
+export const SearchParamsSchemaOpenAPI = z.object({
+  input: z.string().describe('Search query string'),
+  type: z.enum(['tokens', 'assets', 'pairs']).optional().describe('Type of results to return'),
+  filters: z
+    .string()
+    .optional()
+    .describe('JSON string with filter options: blockchains, poolTypes, excludeBonded, bondedOnly'),
+  sortBy: z
+    .enum([
+      'volume24h',
+      'marketCap',
+      'createdAt',
+      'volume1h',
+      'feesPaid5min',
+      'feesPaid1h',
+      'feesPaid24h',
+      'volume5min',
+      'holdersCount',
+      'organicVolume1h',
+      'totalFeesPaidUsd',
+      'searchScore',
+      'trendingScore24h',
+    ])
+    .optional()
+    .describe('Sort field for search results'),
+  excludeBonded: z.boolean().optional().describe('Exclude bonded tokens from results'),
+  limit: z.number().optional().describe('Maximum number of results (1-20, default: 5)'),
+});
+
 const TokenSchema = z.object({
   address: z.string(),
   price: z.number().nullable(),

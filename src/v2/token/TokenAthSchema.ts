@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import { CurrenciesParamSchema } from '../../utils/schemas/CurrencySchema.ts';
 
 const TokenAthItemParams = z.object({
@@ -26,8 +27,36 @@ export const TokenAthBatchParamsSchema = z.union([
   }),
 ]);
 
-export type TokenAthParams = z.input<typeof TokenAthParamsSchema>;
+const TOKEN_ATH_HIDDEN = ['instanceTracking'] as const;
+type TokenAthHiddenFields = (typeof TOKEN_ATH_HIDDEN)[number];
+
+export type TokenAthParams = SDKInput<typeof TokenAthParamsSchema, TokenAthHiddenFields>;
 export type TokenAthBatchParams = z.input<typeof TokenAthBatchParamsSchema>;
+
+export const TokenAthParamsSchemaOpenAPI = createOpenAPIParams(TokenAthParamsSchema, {
+  omit: [...TOKEN_ATH_HIDDEN],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    address: 'Token contract address',
+    currencies: 'Comma-separated list of currencies for price conversion',
+  },
+});
+
+const TokenAthItemParamsOpenAPI = createOpenAPIParams(TokenAthItemParams, {
+  omit: [...TOKEN_ATH_HIDDEN],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    address: 'Token contract address',
+    currencies: 'Comma-separated list of currencies for price conversion',
+  },
+});
+
+export const TokenAthBatchParamsSchemaOpenAPI = z.union([
+  z.array(TokenAthItemParamsOpenAPI),
+  z.object({
+    items: z.array(TokenAthItemParamsOpenAPI),
+  }),
+]);
 
 export const TokenAthOutput = z.object({
   address: z.string(),

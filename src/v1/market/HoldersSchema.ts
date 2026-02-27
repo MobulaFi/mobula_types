@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 
 export const MarketTokenHoldersParamsSchema = z
   .object({
@@ -26,6 +27,17 @@ export const MarketTokenHoldersParamsSchema = z
   }));
 
 export type MarketTokenHoldersParams = z.input<typeof MarketTokenHoldersParamsSchema>;
+
+export const MarketTokenHoldersParamsSchemaOpenAPI = createOpenAPIParams(MarketTokenHoldersParamsSchema, {
+  omit: ['backfill', 'includeZeroBalance'],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    asset: 'Token contract address',
+    symbol: 'Token symbol',
+    limit: 'Number of holders per page (max 100, default: 20)',
+    offset: 'Offset for pagination (default: 0)',
+  },
+});
 
 export const MarketTokenHoldersResponseSchema = z.object({
   data: z.array(

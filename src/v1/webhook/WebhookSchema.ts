@@ -106,7 +106,7 @@ export const WebhookResponseSchema = z.object({
   filters: z.any().nullable().optional(),
   webhookUrl: z.string().url(),
   apiKey: z.string(),
-  createdAt: z.union([z.string(), z.date()]).transform((val) => (val instanceof Date ? val.toISOString() : val)),
+  createdAt: z.union([z.string(), z.coerce.date()]).transform((val) => (val instanceof Date ? val.toISOString() : val)),
 });
 
 export type WebhookResponse = z.infer<typeof WebhookResponseSchema>;

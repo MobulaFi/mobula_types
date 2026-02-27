@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 
 export const WalletTransactionsParamsSchema = z.object({
   limit: z.string().optional(),
@@ -23,6 +24,54 @@ export const WalletTransactionsParamsSchema = z.object({
 });
 
 export type WalletTransactionsParams = z.input<typeof WalletTransactionsParamsSchema>;
+
+export const WalletTransactionsParamsSchemaOpenAPI = createOpenAPIParams(WalletTransactionsParamsSchema, {
+  omit: ['cache', 'stale', 'recheckContract', 'trades', 'transactions', 'onlyAssets'],
+  describe: {
+    wallet: 'Wallet address',
+    wallets: 'Comma-separated wallet addresses',
+    blockchains: 'Comma-separated blockchain IDs',
+    from: 'Start timestamp',
+    to: 'End timestamp',
+    asset: 'Filter by asset address',
+    limit: 'Number of results per page',
+    offset: 'Offset for pagination',
+    page: 'Page number',
+    order: 'Sort order (asc/desc)',
+    unlistedAssets: 'Include unlisted assets',
+    pagination: 'Enable pagination details',
+    filterSpam: 'Filter spam transactions',
+  },
+});
+
+export const WalletRawTransactionsParamsSchemaOpenAPI = createOpenAPIParams(
+  z.object({
+    limit: z.string().optional(),
+    offset: z.string().optional(),
+    page: z.string().optional(),
+    order: z.string().optional(),
+    wallet: z.string().optional(),
+    wallets: z.string().optional(),
+    from: z.string().optional(),
+    to: z.string().optional(),
+    blockchains: z.string().optional(),
+    pagination: z.string().optional(),
+  }),
+  {
+    describe: {
+      wallet: 'Wallet address',
+      wallets: 'Comma-separated wallet addresses',
+      blockchains: 'Comma-separated blockchain IDs',
+      from: 'Start timestamp',
+      to: 'End timestamp',
+      limit: 'Number of results per page',
+      offset: 'Offset for pagination',
+      page: 'Page number',
+      order: 'Sort order (asc/desc)',
+      pagination: 'Enable pagination details',
+    },
+  },
+);
 
 export const WalletRawTransactionsParamsSchema = z
   .object({
@@ -195,7 +244,7 @@ export type RawTransactionOutputType = z.infer<typeof RawTransactionSchema>;
 
 const RawNFTTransactionSchema = z.object({
   combined_id: z.string(),
-  combined_date: z.date().transform((d) => d.toISOString()),
+  combined_date: z.coerce.date().transform((d) => d.toISOString()),
   contract_address: z.string().nullable(),
   from_address: z.string().nullable(),
   to_address: z.string().nullable(),
@@ -218,7 +267,7 @@ const UnifiedNFTTransactionSchema = z.object({
   token: z.string(),
   symbol: z.string().optional(),
   tokenId: z.string().nullable(),
-  timestamp: z.date().transform((d) => d.toISOString()),
+  timestamp: z.coerce.date().transform((d) => d.toISOString()),
   block_number: z.number().nullable(),
   txn_fees: z.string().nullable(),
   status: z.boolean(),

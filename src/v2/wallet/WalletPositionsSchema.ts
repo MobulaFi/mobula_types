@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import { tokenPositionSchema, WalletMetadataSchema } from '../../utils/schemas/WalletDeployerSchema.ts';
 
 /**
@@ -27,6 +28,18 @@ export const positionSortByToInternal = (sortBy: PositionSortBy): 'last_activity
 export const WalletPositionsParamsSchema = z.object({
   wallet: z.string(),
   blockchain: z.string().optional(),
+  blockchains: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val) {
+        return val
+          .split(',')
+          .map((b) => b.trim())
+          .filter((b) => b.length > 0);
+      }
+      return [];
+    }),
 
   // Pagination
   limit: z.coerce.number().min(1).max(500).optional().default(100),
@@ -61,12 +74,37 @@ export const WalletPositionsParamsSchema = z.object({
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
-export type WalletPositionsParams = z.input<typeof WalletPositionsParamsSchema>;
+/** Fields accepted at runtime but hidden from SDK types and OpenAPI spec */
+const WALLET_POSITIONS_HIDDEN = [
+  'blockchain',
+  '_backfillPositions',
+  '_backfillSwapsAndPositions',
+  'includeFees',
+  'useSwapRecipient',
+] as const;
+type WalletPositionsHiddenFields = (typeof WALLET_POSITIONS_HIDDEN)[number];
+
+export type WalletPositionsParams = SDKInput<typeof WalletPositionsParamsSchema, WalletPositionsHiddenFields>;
+
+export const WalletPositionsParamsSchemaOpenAPI = createOpenAPIParams(WalletPositionsParamsSchema, {
+  omit: [...WALLET_POSITIONS_HIDDEN],
+  describe: {
+    wallet: 'Wallet address',
+    blockchains:
+      'Comma-separated list of blockchain IDs (e.g., "ethereum,base,solana:solana"). If omitted, all chains.',
+    limit: 'Number of positions per page (1-500, default: 100)',
+    offset: 'Offset for pagination (default: 0)',
+    cursor: 'Cursor for cursor-based pagination (takes precedence over offset)',
+    cursorDirection: 'Cursor direction (default: after)',
+    sortBy: 'Sort field (default: lastActivity)',
+    order: 'Sort order (default: desc)',
+  },
+});
 
 export const SinglePositionQuery = z.object({
   wallet: z.string(),
   asset: z.string(),
-  blockchain: z.string(),
+  blockchain: z.string().optional(),
   /** Include fees in PnL calculation (deduct total_fees_paid_usd from PnL) */
   includeFees: z
     .union([z.boolean(), z.string()])
@@ -77,6 +115,18 @@ export const SinglePositionQuery = z.object({
     .union([z.boolean(), z.string()])
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+});
+
+const SINGLE_POSITION_HIDDEN = ['includeFees', 'useSwapRecipient'] as const;
+type SinglePositionHiddenFields = (typeof SINGLE_POSITION_HIDDEN)[number];
+
+export const SinglePositionQueryOpenAPI = createOpenAPIParams(SinglePositionQuery, {
+  omit: [...SINGLE_POSITION_HIDDEN],
+  describe: {
+    wallet: 'Wallet address',
+    asset: 'Token contract address',
+    blockchain: 'Blockchain ID (e.g., "ethereum", "solana:solana")',
+  },
 });
 
 // Batch position query - single item schema
@@ -106,6 +156,23 @@ export const SinglePositionBatchParamsSchema = z.union([
       if (val === 'false') return false;
       return val;
     }, z.boolean().optional()),
+  }),
+]);
+
+// OpenAPI-compatible batch params (hides internal fields per item)
+const SinglePositionItemSchemaOpenAPI = createOpenAPIParams(SinglePositionItemSchema, {
+  omit: [...SINGLE_POSITION_HIDDEN],
+  describe: {
+    wallet: 'Wallet address',
+    asset: 'Token contract address',
+    blockchain: 'Blockchain ID (e.g., "ethereum", "solana:solana")',
+  },
+});
+
+export const SinglePositionBatchParamsSchemaOpenAPI = z.union([
+  z.array(SinglePositionItemSchemaOpenAPI),
+  z.object({
+    items: z.array(SinglePositionItemSchemaOpenAPI),
   }),
 ]);
 
@@ -154,7 +221,9 @@ export type SinglePositionBatchResponse = z.infer<typeof SinglePositionBatchResp
 export type BatchPositionItem = z.infer<typeof batchPositionItemSchema>;
 
 // Type aliases for SDK consistency
-export type WalletPositionParams = z.input<typeof SinglePositionQuery>;
+export type WalletPositionParams = SDKInput<typeof SinglePositionQuery, SinglePositionHiddenFields>;
 export type WalletPositionResponse = z.infer<typeof singlePositionOutputSchema>;
-export type WalletPositionBatchParams = z.input<typeof SinglePositionBatchParamsSchema>;
+
+type CleanBatchItem = Omit<z.input<typeof SinglePositionItemSchema>, SinglePositionHiddenFields>;
+export type WalletPositionBatchParams = CleanBatchItem[] | { items: CleanBatchItem[]; instanceTracking?: boolean };
 export type WalletPositionBatchResponse = z.infer<typeof SinglePositionBatchResponseSchema>;

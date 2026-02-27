@@ -17,6 +17,7 @@ export const EVMSecurityFlagsSchema = z.object({
   isMintable: z.boolean().optional(),
   modifyableTax: z.boolean().optional(),
   selfDestruct: z.boolean().optional(),
+  liquidityBurnPercentage: z.number().optional(),
 });
 
 export type EVMSecurityFlags = z.infer<typeof EVMSecurityFlagsSchema>;
@@ -31,6 +32,7 @@ export const SolanaSecurityFlagsSchema = z.object({
   balanceMutable: z.boolean().optional(),
   lowLiquidity: z.string().optional(),
   burnRate: z.string().optional(),
+  liquidityBurnPercentage: z.number().optional(),
 });
 
 export type SolanaSecurityFlags = z.infer<typeof SolanaSecurityFlagsSchema>;

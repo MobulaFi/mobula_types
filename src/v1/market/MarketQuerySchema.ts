@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import type { GenericWhere } from '../../utils/functions/queryFilters.ts';
 
 const allowedFields = [
@@ -132,6 +133,19 @@ export const MarketQueryParamsSchema = z
 export type MarketQueryParams = z.input<typeof MarketQueryParamsSchema>;
 
 export type MarketQueryInferType = z.infer<typeof MarketQueryParamsSchema>;
+
+export const MarketQueryParamsSchemaOpenAPI = createOpenAPIParams(MarketQueryParamsSchema, {
+  omit: ['blockchain'],
+  describe: {
+    sortBy: 'Sort field (e.g. price, liquidity, market_cap, volume)',
+    sortOrder: 'Sort order: asc or desc (default: desc)',
+    filters: 'Comma-separated filters in format field:min:max (e.g. liquidity:1000:,market_cap:100000:1000000)',
+    blockchains: 'Comma-separated blockchain IDs',
+    categories: 'Comma-separated category names',
+    limit: 'Maximum number of results (default: 20)',
+    offset: 'Offset for pagination',
+  },
+});
 
 export const MarketQueryResponseSchema = z.array(
   z.object({

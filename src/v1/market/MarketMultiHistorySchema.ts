@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import normalizePeriod from '../../utils/functions/period.ts';
 
 export const MarketMultiHistoryParamsSchema = z.object({
@@ -73,6 +74,19 @@ export const MarketMultiHistoryParamsSchema = z.object({
 });
 
 export type MarketMultiHistoryParams = z.input<typeof MarketMultiHistoryParamsSchema>;
+
+export const MarketMultiHistoryParamsSchemaOpenAPI = createOpenAPIParams(MarketMultiHistoryParamsSchema, {
+  omit: ['froms', 'tos'],
+  describe: {
+    assets: 'Comma-separated token contract addresses',
+    period: 'Time period (e.g., "1h", "24h", "7d")',
+    symbols: 'Comma-separated token symbols',
+    blockchains: 'Comma-separated blockchain IDs',
+    ids: 'Comma-separated asset IDs',
+    from: 'Start timestamp',
+    to: 'End timestamp',
+  },
+});
 
 export const MarketMultiHistoryResponseSchema = z.object({
   data: z.array(

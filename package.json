@@ -1,6 +1,6 @@
 {
   "name": "@mobula/types",
-  "version": "0.1.6",
+  "version": "0.1.10",
   "description": "Centralized TypeScript types and schemas for Mobula SDK and applications.",
   "author": "Mobula",
   "license": "MIT",

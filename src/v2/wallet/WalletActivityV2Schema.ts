@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import { PlatformMetadataOutput } from '../../utils/schemas/PlatformMetadataOutput.ts';
 import { TokenDetailsOutput } from '../../utils/schemas/TokenDetailsOutput.ts';
 
@@ -102,6 +103,32 @@ export const WalletActivityV2ParamsSchema = z
   }));
 
 export type WalletActivityV2Params = z.input<typeof WalletActivityV2ParamsSchema>;
+
+export const WalletActivityV2ParamsSchemaOpenAPI = createOpenAPIParams(WalletActivityV2ParamsSchema, {
+  omit: [
+    'blacklist',
+    'pagination',
+    'backfillTransfers',
+    'backfillBalances',
+    'cursor_hash',
+    'cursor_direction',
+    'withTokens',
+    'enrichSwaps',
+  ],
+  describe: {
+    wallet: 'Wallet address',
+    blockchains: 'Comma-separated list of blockchain IDs (e.g., "ethereum,base,solana:solana")',
+    offset: 'Offset for pagination (default: 0)',
+    limit: 'Number of transactions per page (default: 100)',
+    order: 'Sort order: asc or desc (default: desc)',
+    unlistedAssets: 'Include unlisted assets (default: true)',
+    filterSpam: 'Filter spam transactions (default: true)',
+    cursorHash: 'Cursor hash for cursor-based pagination',
+    cursorDirection: 'Cursor direction: before or after',
+    from: 'Start timestamp in milliseconds',
+    to: 'End timestamp in milliseconds',
+  },
+});
 
 // Reusable asset schema used in nested activity items
 const ActivityAssetSchema = z.object({

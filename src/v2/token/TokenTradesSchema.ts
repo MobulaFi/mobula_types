@@ -1,11 +1,14 @@
 import { z } from 'zod';
 import { SwapType, Tags } from '../../utils/constants/constants.ts';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import DateQuery from '../../utils/schemas/DateQuery.ts';
 import { PlatformMetadataOutput } from '../../utils/schemas/PlatformMetadataOutput.ts';
 import { stringOrArray } from '../../utils/schemas/StringOrArray.ts';
 import { TokenDetailsOutput } from '../../utils/schemas/TokenDetailsOutput.ts';
 import { TokenMetadataMinimal } from '../../utils/schemas/TokenMetadataMinimal.ts';
 import { WalletMetadataOutput } from '../../utils/schemas/WalletMetadataOutput.ts';
+
+export const TradeDirection = z.enum(['buy', 'sell']);
 
 export const TokenTradesParamsSchema = z.object({
   blockchain: z.string().optional(),
@@ -21,6 +24,7 @@ export const TokenTradesParamsSchema = z.object({
   swapTypes: stringOrArray
     .optional()
     .transform((val) => val?.filter((v) => Object.values(SwapType).includes(v as SwapType))),
+  type: TradeDirection.optional(),
   transactionSenderAddresses: stringOrArray.optional().refine((arr) => !arr || arr.length <= 25, {
     message: 'Maximum 25 transaction sender addresses allowed',
   }),
@@ -34,6 +38,25 @@ export const TokenTradesParamsSchema = z.object({
 
 export type TokenTradesParams = z.input<typeof TokenTradesParamsSchema>;
 export type TokenTradesInferType = z.infer<typeof TokenTradesParamsSchema>;
+
+export const TokenTradesParamsSchemaOpenAPI = createOpenAPIParams(TokenTradesParamsSchema, {
+  omit: ['useSwapRecipient', 'mode'],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    address: 'Token or pool contract address',
+    offset: 'Offset for pagination (default: 0)',
+    limit: 'Number of trades per page (default: 10)',
+    sortOrder: 'Sort order: asc or desc (default: desc)',
+    label: 'Filter by wallet label (e.g., sniper, insider, bundler)',
+    swapTypes: 'Comma-separated swap types to filter (e.g., "REGULAR,MEV")',
+    type: 'Filter by trade direction: "buy" or "sell"',
+    transactionSenderAddresses: 'Comma-separated wallet addresses to filter (max 25)',
+    maxAmountUSD: 'Maximum trade amount in USD',
+    minAmountUSD: 'Minimum trade amount in USD',
+    fromDate: 'Start date filter (timestamp or ISO string)',
+    toDate: 'End date filter (timestamp or ISO string)',
+  },
+});
 
 export const TokenTradeOutput = z.object({
   id: z.string(),

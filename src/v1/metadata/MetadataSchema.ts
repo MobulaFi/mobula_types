@@ -1,5 +1,6 @@
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi';
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 
 extendZodWithOpenApi(z);
 
@@ -15,6 +16,16 @@ export const MetadataParamsSchema = z
   .strict();
 
 export type MetadataParams = z.input<typeof MetadataParamsSchema>;
+
+export const MetadataParamsSchemaOpenAPI = createOpenAPIParams(MetadataParamsSchema, {
+  omit: ['force', 'full'],
+  describe: {
+    symbol: 'Token symbol',
+    id: 'Asset ID',
+    asset: 'Token contract address',
+    blockchain: 'Blockchain name or chain ID',
+  },
+});
 
 export const MultiMetadataParamsSchema = z
   .object({
@@ -34,6 +45,15 @@ export const MultiMetadataParamsSchema = z
   });
 
 export type MultiMetadataParams = z.input<typeof MultiMetadataParamsSchema>;
+
+export const MultiMetadataParamsSchemaOpenAPI = createOpenAPIParams(MultiMetadataParamsSchema, {
+  describe: {
+    ids: 'Comma-separated asset IDs',
+    assets: 'Comma-separated token contract addresses',
+    blockchains: 'Comma-separated blockchain IDs',
+    symbols: 'Comma-separated token symbols',
+  },
+});
 
 export const MetadataResponseSchema = z.object({
   data: z.object({

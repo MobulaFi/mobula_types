@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import { EnrichedPoolDataSchema } from '../../utils/schemas/EnrichedMarketData.ts';
 
 export const MarketPairsParamsSchema = z.object({
@@ -17,6 +18,20 @@ export const MarketPairsParamsSchema = z.object({
 });
 
 export type MarketPairsParams = z.input<typeof MarketPairsParamsSchema>;
+
+export const MarketPairsParamsSchemaOpenAPI = createOpenAPIParams(MarketPairsParamsSchema, {
+  omit: ['blockchain', 'tokens'],
+  describe: {
+    limit: 'Maximum number of results (max: 25)',
+    offset: 'Offset for pagination',
+    id: 'Asset ID',
+    asset: 'Token contract address or name',
+    symbol: 'Token symbol',
+    blockchains: 'Comma-separated blockchain IDs',
+    excludeBonded: 'Exclude bonded pairs',
+    poolType: 'Filter by pool type',
+  },
+});
 export type MarketPairInferParams = z.infer<typeof MarketPairsParamsSchema>;
 
 export const MarketPairsResponseSchema = z.object({

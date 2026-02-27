@@ -84,7 +84,7 @@ export const SwapQuotingQuerySchema = z
       .optional()
       .transform((val) => {
         if (!val) return undefined;
-        // Return raw string values - no mapping, pass directly to KyberSwap
+        // Return raw string values - no mapping, pass directly to aggregator
         return val
           .split(',')
           .map((t) => t.trim())
@@ -96,7 +96,7 @@ export const SwapQuotingQuerySchema = z
       .optional()
       .transform((val) => {
         if (!val) return undefined;
-        const supportedRouters = ['jupiter', 'kyberswap', 'lifi'] as const;
+        const supportedRouters = ['jupiter', 'naos', 'kyberswap', 'lifi'] as const;
 
         // Handle comma-separated values for array support
         const routers = val

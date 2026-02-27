@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import { type SecurityFlags, SecurityFlagsSchema } from '../../utils/schemas/SecuritySchemas.ts';
 
 // Token type values defined locally to avoid circular dependency with @mobula/protocol
@@ -502,6 +503,36 @@ export const PortfolioParamsSchema = z.object({
 
 export type PortfolioParams = z.input<typeof PortfolioParamsSchema>;
 
+export const PortfolioParamsSchemaOpenAPI = createOpenAPIParams(PortfolioParamsSchema, {
+  omit: [
+    'cache',
+    'stale',
+    'recheck_contract',
+    'backfillTransfers',
+    'fetchUntrackedHistory',
+    'fetchAllChains',
+    'shouldFetchPriceChange',
+    'fetchEmptyBalances',
+  ],
+  describe: {
+    wallet: 'Wallet address',
+    wallets: 'Comma-separated wallet addresses',
+    portfolio: 'Portfolio ID',
+    blockchains: 'Comma-separated blockchain IDs',
+    asset: 'Filter by specific asset',
+    from: 'Start date',
+    to: 'End date',
+    portfolio_settings: 'Portfolio display settings',
+    unlistedAssets: 'Include unlisted assets',
+    period: 'Time period',
+    accuracy: 'Data accuracy level',
+    testnet: 'Include testnet data',
+    minliq: 'Minimum liquidity threshold',
+    filterSpam: 'Filter spam tokens',
+    pnl: 'Include PnL data',
+  },
+});
+
 export const PortfolioDefiParamsSchema = z.object({
   wallet: z.string().optional(),
   wallets: z.string().optional(),
@@ -511,6 +542,16 @@ export const PortfolioDefiParamsSchema = z.object({
 });
 
 export type PortfolioDefiParams = z.input<typeof PortfolioDefiParamsSchema>;
+
+export const PortfolioDefiParamsSchemaOpenAPI = createOpenAPIParams(PortfolioDefiParamsSchema, {
+  omit: ['testnet'],
+  describe: {
+    wallet: 'Wallet address',
+    wallets: 'Comma-separated wallet addresses',
+    blockchains: 'Comma-separated blockchain IDs',
+    unlistedAssets: 'Include unlisted assets',
+  },
+});
 
 export type WalletUnsafeParams = {
   wallet?: string;

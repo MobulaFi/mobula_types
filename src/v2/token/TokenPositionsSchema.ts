@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Tags } from '../../utils/constants/constants.ts';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import { stringOrArray } from '../../utils/schemas/StringOrArray.ts';
 import { WalletMetadataOutput } from '../../utils/schemas/WalletMetadataOutput.ts';
 import { PlatformMetadataSchema } from '../wallet/WalletAnalysisQuerySchema.ts';
@@ -15,6 +16,18 @@ export const TokenPositionsParamsSchema = z.object({
 });
 
 export type TokenPositionsParams = z.input<typeof TokenPositionsParamsSchema>;
+
+export const TokenPositionsParamsSchemaOpenAPI = createOpenAPIParams(TokenPositionsParamsSchema, {
+  omit: ['force'],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    address: 'Token contract address',
+    label: 'Filter by wallet label (e.g. sniper, bundler, insider)',
+    limit: 'Maximum number of results (default: 100)',
+    offset: 'Offset for pagination',
+    walletAddresses: 'Comma-separated wallet addresses to filter',
+  },
+});
 
 export const TokenPositionOutput = z.object({
   chainId: z.string(),

@@ -60,6 +60,8 @@ export const TOKEN_METADATA_KEYS = [
   'deployer',
   'bonded_at',
   'description',
+  'is_mayhem_mode',
+  'is_cashback_coin',
 ] as const;
 
 export type TokenMetadataKey = (typeof TOKEN_METADATA_KEYS)[number];
@@ -107,6 +109,9 @@ export const TokenData = z
     blockchain: z.string().optional(),
     type: z.string().optional(),
     tokenType: TokenTypeSchema,
+
+    is_mayhem_mode: z.boolean().nullable().optional().default(null),
+    is_cashback_coin: z.boolean().nullable().optional().default(null),
 
     deployer: z.string().nullable().optional(),
     createdAt: z.string().optional(),

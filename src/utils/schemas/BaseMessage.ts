@@ -1,5 +1,6 @@
 import type { MarketDetailsOutputType } from './MarketDetailsOutput.ts';
 import type { TokenDetailsOutputType } from './TokenDetailsOutput.ts';
+import type { WalletMetadataOutput } from './WalletMetadataOutput.ts';
 
 // Platform metadata structure (id, name, logo)
 export interface PlatformMetadataType {
@@ -25,6 +26,7 @@ export interface BaseMessageType {
   token_amount_raw: string;
   token_amount_raw_vs: string;
   labels?: string[];
+  walletMetadata?: WalletMetadataOutput | null;
   pairData?: MarketDetailsOutputType;
   tokenData?: TokenDetailsOutputType;
   preBalanceBaseToken: string | null;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import { stringOrArray } from '../../utils/schemas/StringOrArray.ts';
 
 // Schema for assets (addresses or names)
@@ -33,6 +34,16 @@ export const MarketMultiDataAssetParamsSchema = z.object({
 });
 
 export type MarketMultiDataAssetParams = z.input<typeof MarketMultiDataAssetParamsSchema>;
+
+export const MarketMultiDataAssetParamsSchemaOpenAPI = createOpenAPIParams(MarketMultiDataAssetParamsSchema, {
+  omit: ['shouldFetchPriceChange'],
+  describe: {
+    ids: 'Comma-separated asset IDs',
+    symbols: 'Comma-separated token symbols',
+    blockchains: 'Comma-separated blockchain IDs',
+    assets: 'Comma-separated token addresses or names',
+  },
+});
 
 const Asset = z.object({
   key: z.string(),

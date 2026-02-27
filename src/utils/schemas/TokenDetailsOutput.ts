@@ -291,6 +291,9 @@ export const TokenDetailsOutput = z
     trendingScore6h: z.coerce.number().default(0),
     trendingScore12h: z.coerce.number().default(0),
     trendingScore24h: z.coerce.number().default(0),
+
+    isMayhemMode: z.boolean().nullable().default(null),
+    isCashbackCoin: z.boolean().nullable().default(null),
   })
   .merge(HoldersStatsSchema);
 

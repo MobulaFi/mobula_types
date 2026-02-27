@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 /**
  * V2 Token Price Schema
- * Same pattern as Token Details - single address/blockchain for GET, items array for POST
+ * Current token price data (market cap, liquidity, etc.)
+ * For historical point-in-time prices, use TokenPriceAtSchema.
  */
 
 // Single item params (for GET and batch items)

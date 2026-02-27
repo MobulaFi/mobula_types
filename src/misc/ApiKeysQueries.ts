@@ -12,8 +12,8 @@ export const API_KEYS_QUERIES = {
   `,
   INSERT: `
     INSERT INTO misc.api_keys
-      (key, customer_id, organization_id, name, total_calls, metrics)
+      (key, customer_id, organization_id, name, total_calls, metrics, ip_rps_limit)
     VALUES
-      ($1, $2, $3, $4, 0, $5)
+      ($1, $2, $3, $4, 0, $5, $6)
   `,
 } as const;

@@ -18,7 +18,7 @@ const SwapQuotingBatchItemSchema = z
     onlyProtocols: z.array(z.string()).optional(),
     poolAddress: z.string().optional(),
     onlyRouters: z
-      .array(z.enum(['jupiter', 'kyberswap', 'lifi']))
+      .array(z.enum(['jupiter', 'naos', 'kyberswap', 'lifi']))
       .optional()
       .transform((val) => (val?.length ? val : undefined)),
     /**

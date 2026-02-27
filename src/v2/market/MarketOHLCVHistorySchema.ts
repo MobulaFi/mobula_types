@@ -23,7 +23,10 @@ const MarketOHLCVHistoryItemSchema = z.object({
     .string()
     .optional()
     .transform((val) => (val ? normalizePeriod(val) : '5m')),
-  amount: z.coerce.number().optional(),
+  amount: z.coerce
+    .number()
+    .optional()
+    .transform((val) => (val !== undefined ? Math.min(val, 2000) : undefined)),
   usd: booleanFromString,
 });
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 
 // Main AssetQuery schema
 export const AssetQuery = z
@@ -24,6 +25,16 @@ export const AssetQuery = z
 
 export type AssetQuery = z.infer<typeof AssetQuery>;
 export type AssetQueryParams = z.input<typeof AssetQuery>;
+
+export const AssetQueryOpenAPI = createOpenAPIParams(AssetQuery, {
+  omit: ['shouldFetchPriceChange'],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    asset: 'Token contract address or name',
+    symbol: 'Token symbol',
+    id: 'Asset ID',
+  },
+});
 
 const Asset = z.object({
   id: z.number().nullable(),

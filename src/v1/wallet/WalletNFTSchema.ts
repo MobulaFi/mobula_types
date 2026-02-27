@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 
 export const WalletNFTParamsSchema = z.object({
   wallet: z.string().min(1),
@@ -10,6 +11,17 @@ export const WalletNFTParamsSchema = z.object({
 });
 
 export type WalletNFTParams = z.input<typeof WalletNFTParamsSchema>;
+
+export const WalletNFTParamsSchemaOpenAPI = createOpenAPIParams(WalletNFTParamsSchema, {
+  omit: ['pagination'],
+  describe: {
+    wallet: 'Wallet address',
+    blockchains: 'Comma-separated blockchain IDs',
+    page: 'Page number (default: 1)',
+    offset: 'Offset for pagination',
+    limit: 'Maximum number of results (default: 100)',
+  },
+});
 export const WalletNFTResponseSchema = z.object({
   data: z.array(
     z.object({

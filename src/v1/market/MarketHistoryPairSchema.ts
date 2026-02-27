@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import normalizePeriod from '../../utils/functions/period.ts';
 import DateQuery from '../../utils/schemas/DateQuery.ts';
 
@@ -37,6 +38,21 @@ export const MarketHistoryPairParamsSchema = z.object({
 });
 
 export type MarketHistoryPairParams = z.input<typeof MarketHistoryPairParamsSchema>;
+
+export const MarketHistoryPairParamsSchemaOpenAPI = createOpenAPIParams(MarketHistoryPairParamsSchema, {
+  omit: ['usd', 'mode'],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    asset: 'Token contract address',
+    symbol: 'Token symbol',
+    address: 'Pool/pair address',
+    baseToken: 'Base token address',
+    from: 'Start date (timestamp or ISO string)',
+    to: 'End date (timestamp or ISO string)',
+    period: 'Candle period (e.g., "5m", "1h", "24h")',
+    amount: 'Token amount for price calculation',
+  },
+});
 
 export type MarketHistoryPairInferType = z.infer<typeof MarketHistoryPairParamsSchema>;
 

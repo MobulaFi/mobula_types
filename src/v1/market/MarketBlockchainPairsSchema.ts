@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 import type { PoolsStatsFilter } from '../../utils/functions/queryFilters.ts';
 import { PoolData } from '../../utils/schemas/EnrichedMarketData.ts';
 
@@ -66,6 +67,20 @@ export const MarketBlockchainPairsParamsSchema = z.object({
 });
 
 export type MarketBlockchainPairsParams = z.input<typeof MarketBlockchainPairsParamsSchema>;
+
+export const MarketBlockchainPairsParamsSchemaOpenAPI = createOpenAPIParams(MarketBlockchainPairsParamsSchema, {
+  omit: ['advancedFilters', 'filters'],
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    blockchains: 'Comma-separated blockchain IDs',
+    sortBy: 'Sort field (default: latest_trade_date)',
+    sortOrder: 'Sort order: asc or desc (default: desc)',
+    factory: 'Filter by DEX factory address',
+    limit: 'Number of pairs per page (max 100, default: 100)',
+    offset: 'Offset for pagination (default: 0)',
+    excludeBonded: 'Exclude bonded pairs (default: false)',
+  },
+});
 
 export const MarketBlockchainPairsResponseSchema = z.object({
   data: z.array(

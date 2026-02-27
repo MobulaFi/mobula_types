@@ -57,6 +57,8 @@ export const TokenSecurityOutput = z.object({
   // Static analysis status
   staticAnalysisStatus: StaticAnalysisStatusEnum.nullable(),
   staticAnalysisDate: z.string().nullable(),
+  // Liquidity burn: percentage of LP tokens sent to dead/zero addresses
+  liquidityBurnPercentage: z.number().nullable(),
 });
 
 export type TokenSecurityOutputType = z.infer<typeof TokenSecurityOutput>;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import { WalletMetadataOutput } from '../../utils/schemas/WalletMetadataOutput.ts';
 
 // Platform metadata schema (similar to factories_metadata)
@@ -15,6 +16,18 @@ export const WalletAnalysisParamsSchema = z
   .object({
     wallet: z.string().min(1, 'Wallet address is required'),
     blockchain: z.string().optional(),
+    blockchains: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (val) {
+          return val
+            .split(',')
+            .map((b) => b.trim())
+            .filter((b) => b.length > 0);
+        }
+        return [];
+      }),
     period: z
       .string()
       .optional()
@@ -46,15 +59,22 @@ export const WalletAnalysisParamsSchema = z
     },
   );
 
-export type WalletAnalysisParams = z.input<typeof WalletAnalysisParamsSchema>;
+/** Fields accepted at runtime but hidden from SDK types and OpenAPI spec */
+const WALLET_ANALYSIS_HIDDEN = ['blockchain'] as const;
+type WalletAnalysisHiddenFields = (typeof WALLET_ANALYSIS_HIDDEN)[number];
 
-// OpenAPI-compatible params schema (simplified without transformations)
-export const WalletAnalysisParamsSchemaOpenAPI = z.object({
-  wallet: z.string().min(1).describe('Wallet address to analyze'),
-  blockchain: z.string().optional().describe('Blockchain ID (e.g., ethereum, base, solana:solana)'),
-  period: z.string().optional().describe('Analysis period: 1d, 7d, 30d, or 90d (default: 7d)'),
-  from: z.number().optional().describe('Start timestamp in milliseconds (alternative to period)'),
-  to: z.number().optional().describe('End timestamp in milliseconds (alternative to period)'),
+export type WalletAnalysisParams = SDKInput<typeof WalletAnalysisParamsSchema, WalletAnalysisHiddenFields>;
+
+export const WalletAnalysisParamsSchemaOpenAPI = createOpenAPIParams(WalletAnalysisParamsSchema, {
+  omit: [...WALLET_ANALYSIS_HIDDEN],
+  describe: {
+    wallet: 'Wallet address to analyze',
+    blockchains:
+      'Comma-separated list of blockchain IDs (e.g., "ethereum,base,solana:solana"). If omitted, all chains.',
+    period: 'Analysis period: 1d, 7d, 30d, or 90d (default: 7d)',
+    from: 'Start timestamp in milliseconds (alternative to period)',
+    to: 'End timestamp in milliseconds (alternative to period)',
+  },
 });
 
 // Calendar breakdown entry schema (day-by-day breakdown)

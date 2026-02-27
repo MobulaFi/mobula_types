@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import { TokenDetailsOutput } from '../../utils/schemas/TokenDetailsOutput.ts';
 
 // Output schema for a single token in the asset
@@ -69,10 +70,23 @@ const AssetDetailsParamsSchema = z
     message: 'Either id OR (address AND blockchain) must be provided',
   });
 
-export type AssetDetailsParams = z.input<typeof AssetDetailsParamsSchema>;
+const ASSET_DETAILS_HIDDEN = ['instanceTracking'] as const;
+type AssetDetailsHiddenFields = (typeof ASSET_DETAILS_HIDDEN)[number];
+
+export type AssetDetailsParams = SDKInput<typeof AssetDetailsParamsSchema, AssetDetailsHiddenFields>;
 export type AssetDetailsParsedParams = z.infer<typeof AssetDetailsParamsSchema> & {
   chainId?: string;
 };
+
+export const AssetDetailsParamsSchemaOpenAPI = createOpenAPIParams(AssetDetailsParamsSchema, {
+  omit: [...ASSET_DETAILS_HIDDEN],
+  describe: {
+    id: 'Asset ID',
+    address: 'Token contract address',
+    blockchain: 'Blockchain name or chain ID',
+    tokensLimit: 'Maximum number of tokens to return (1-50, default: 10)',
+  },
+});
 
 // Response schemas
 export const AssetDetailsResponseSchema = z.object({
