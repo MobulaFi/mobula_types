@@ -13,6 +13,7 @@ export const MarketDetailsPayloadSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  maxUpdatesPerMinute: z.coerce.number().optional(),
 });
 
 export type MarketDetailsPayloadType = z.input<typeof MarketDetailsPayloadSchema>;
