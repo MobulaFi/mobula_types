@@ -72,6 +72,11 @@ export const WalletPositionsParamsSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  /** Include all RPC balances, not just tokens with trading positions in DB */
+  includeAllBalances: z
+    .union([z.boolean(), z.string()])
+    .default(false)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
 /** Fields accepted at runtime but hidden from SDK types and OpenAPI spec */
@@ -79,8 +84,6 @@ const WALLET_POSITIONS_HIDDEN = [
   'blockchain',
   '_backfillPositions',
   '_backfillSwapsAndPositions',
-  'includeFees',
-  'useSwapRecipient',
 ] as const;
 type WalletPositionsHiddenFields = (typeof WALLET_POSITIONS_HIDDEN)[number];
 
@@ -98,6 +101,9 @@ export const WalletPositionsParamsSchemaOpenAPI = createOpenAPIParams(WalletPosi
     cursorDirection: 'Cursor direction (default: after)',
     sortBy: 'Sort field (default: lastActivity)',
     order: 'Sort order (default: desc)',
+    includeFees: 'Include fees in PnL calculation (deduct total_fees_paid_usd from PnL)',
+    useSwapRecipient: 'Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions)',
+    includeAllBalances: 'Include all tokens the wallet holds, not just tokens with trading history',
   },
 });
 

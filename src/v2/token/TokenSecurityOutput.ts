@@ -59,6 +59,27 @@ export const TokenSecurityOutput = z.object({
   staticAnalysisDate: z.string().nullable(),
   // Liquidity burn: percentage of LP tokens sent to dead/zero addresses
   liquidityBurnPercentage: z.number().nullable(),
+  // LP holder analysis: top pools sorted by volume, each with holder breakdown
+  liquidityAnalysis: z
+    .array(
+      z.object({
+        poolAddress: z.string(),
+        poolType: z.string(),
+        burnedPercentage: z.number(),
+        lockedPercentage: z.number(),
+        contractPercentage: z.number(),
+        unlockedPercentage: z.number(),
+        topHolders: z.array(
+          z.object({
+            address: z.string(),
+            percentage: z.number(),
+            type: z.enum(['burned', 'locked', 'contract', 'unlocked']),
+            protocol: z.string().nullable(),
+          }),
+        ),
+      }),
+    )
+    .nullable(),
 });
 
 export type TokenSecurityOutputType = z.infer<typeof TokenSecurityOutput>;

@@ -231,6 +231,39 @@ export const SwapQuotingQuerySchema = z
      * Only supported for Solana chains.
      */
     payerAddress: z.string().optional(),
+    /**
+     * Enable multi-lander mode (Solana only).
+     * When 'true', returns N candidate transactions (one per active lander)
+     * using a durable nonce. Only one candidate can land on-chain.
+     *
+     * Requires the server to have durable nonce accounts provisioned.
+     * Ignores jitoTipLamports (tips are auto-generated per lander).
+     */
+    multiLander: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (!val) return undefined;
+        if (val === 'true') return true as const;
+        if (val === 'false') return undefined;
+        throw new Error(`Invalid multiLander "${val}". Must be 'true' or 'false'`);
+      }),
+    /**
+     * Tip amount in lamports for multi-lander mode.
+     * Each candidate will tip this amount to its respective lander.
+     * Default: use the lander's minimum tip.
+     */
+    landerTipLamports: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (!val) return undefined;
+        const numValue = Number.parseInt(val, 10);
+        if (!Number.isNaN(numValue) && numValue > 0) {
+          return numValue;
+        }
+        throw new Error(`Invalid landerTipLamports "${val}". Must be a positive number`);
+      }),
   })
   .refine(
     (data) => {

@@ -294,6 +294,7 @@ export const TokenDetailsOutput = z
 
     isMayhemMode: z.boolean().nullable().default(null),
     isCashbackCoin: z.boolean().nullable().default(null),
+    isAgentMode: z.boolean().nullable().default(null),
   })
   .merge(HoldersStatsSchema);
 

@@ -23,7 +23,9 @@ export const TokenTradesParamsSchema = z.object({
   label: z.nativeEnum(Tags).optional(),
   swapTypes: stringOrArray
     .optional()
-    .transform((val) => val?.filter((v) => Object.values(SwapType).includes(v as SwapType))),
+    .transform((val) =>
+      val?.map((v) => v.toUpperCase()).filter((v) => Object.values(SwapType).includes(v as SwapType)),
+    ),
   type: TradeDirection.optional(),
   transactionSenderAddresses: stringOrArray.optional().refine((arr) => !arr || arr.length <= 25, {
     message: 'Maximum 25 transaction sender addresses allowed',

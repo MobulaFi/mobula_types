@@ -62,6 +62,7 @@ export const TOKEN_METADATA_KEYS = [
   'description',
   'is_mayhem_mode',
   'is_cashback_coin',
+  'is_agent_mode',
 ] as const;
 
 export type TokenMetadataKey = (typeof TOKEN_METADATA_KEYS)[number];
@@ -112,6 +113,7 @@ export const TokenData = z
 
     is_mayhem_mode: z.boolean().nullable().optional().default(null),
     is_cashback_coin: z.boolean().nullable().optional().default(null),
+    is_agent_mode: z.boolean().nullable().optional().default(null),
 
     deployer: z.string().nullable().optional(),
     createdAt: z.string().optional(),

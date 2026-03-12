@@ -49,6 +49,7 @@ const TokenDetailsSchema = z
 
     isMayhemMode: z.boolean().nullable().optional().default(null),
     isCashbackCoin: z.boolean().nullable().optional().default(null),
+    isAgentMode: z.boolean().nullable().optional().default(null),
 
     deployer: z.string().nullable().optional(),
     createdAt: z.coerce.string().optional(),

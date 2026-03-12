@@ -30,6 +30,8 @@ export const SwapSendSchema = z
     chainId: z.string(),
     signedTransaction: base64ToBuffer.optional(),
     candidates: z.array(SwapSendCandidateSchema).min(1).optional(),
+    /** When true, the endpoint blocks until on-chain confirmation and returns swap data. */
+    awaitLanding: z.boolean().optional(),
   })
   .refine((data) => data.signedTransaction || data.candidates, {
     message: 'Either signedTransaction or candidates must be provided',

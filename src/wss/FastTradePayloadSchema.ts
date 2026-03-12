@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const FastTradesPayloadSchema = z.object({
   assetMode: z.coerce.boolean().default(false),
+  traderMode: z.coerce.boolean().default(false),
   items: z.array(
     z.object({
       address: z.string(),
@@ -59,4 +60,10 @@ export interface TokenFastTrade extends BaseFastTrade {
   pair?: never;
 }
 
-export type WssFastTradesResponseType = PairFastTrade | TokenFastTrade;
+export interface TraderFastTrade extends BaseFastTrade {
+  trader: string;
+  pair: string;
+  token: string;
+}
+
+export type WssFastTradesResponseType = PairFastTrade | TokenFastTrade | TraderFastTrade;

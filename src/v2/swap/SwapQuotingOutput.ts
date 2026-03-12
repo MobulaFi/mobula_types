@@ -19,6 +19,8 @@ const EVMTransactionSchema = z.object({
   maxPriorityFeePerGas: z.string().optional(),
   nonce: z.number().optional(),
   chainId: z.number(),
+  /** Address the user must approve the sell token to (defaults to `to` if not set) */
+  approvalAddress: z.string().optional(),
 });
 
 const TokenInfoSchema = z.object({
@@ -99,12 +101,39 @@ const DataWithEVMSchema = BaseDataSchema.extend({
   solana: z.null().optional(),
 });
 
+const CandidateSchema = z.object({
+  /** Lander ID (e.g., 'jito', 'nozomi', 'zeroslot') */
+  lander: z.string(),
+  /** Base64-encoded serialized VersionedTransaction (unsigned) */
+  serialized: z.string(),
+  /** Tip account used for this candidate */
+  tipAccount: z.string(),
+  /** Tip amount in lamports */
+  tipLamports: z.number(),
+});
+
+const DataWithCandidatesSchema = BaseDataSchema.extend({
+  /** Multi-lander candidate transactions (Solana only) */
+  candidates: z.array(CandidateSchema).min(1),
+  /** Durable nonce account public key */
+  nonceAccount: z.string(),
+  /** Nonce authority public key (must co-sign) */
+  nonceAuthority: z.string(),
+  solana: z.null().optional(),
+  evm: z.null().optional(),
+});
+
 const DataWithErrorSchema = BaseDataSchema.extend({
   solana: z.null().optional(),
   evm: z.null().optional(),
 });
 
-export const SwapQuotingDataSchema = z.union([DataWithSolanaSchema, DataWithEVMSchema, DataWithErrorSchema]);
+export const SwapQuotingDataSchema = z.union([
+  DataWithSolanaSchema,
+  DataWithEVMSchema,
+  DataWithCandidatesSchema,
+  DataWithErrorSchema,
+]);
 
 export const SwapQuotingOutputSchema = z.object({
   data: SwapQuotingDataSchema,

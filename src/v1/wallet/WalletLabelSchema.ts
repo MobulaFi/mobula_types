@@ -35,6 +35,27 @@ export const WalletLabelsResponseSchema = z.object({
         })
         .nullable()
         .optional(),
+      fundingInfo: z
+        .object({
+          from: z.string().nullable(),
+          date: z.coerce.date().nullable(),
+          chainId: z.string().nullable(),
+          txHash: z.string().nullable(),
+          formattedAmount: z.number().nullable(),
+          currency: z
+            .object({
+              name: z.string(),
+              symbol: z.string(),
+              logo: z.string().nullable(),
+              decimals: z.number(),
+              address: z.string(),
+            })
+            .nullable(),
+          fromWalletTag: z.string().nullable(),
+          fromWalletLogo: z.string().nullable(),
+        })
+        .nullable()
+        .optional(),
     }),
   ),
 });

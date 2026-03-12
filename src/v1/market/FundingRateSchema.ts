@@ -10,6 +10,7 @@ export const FundingRateParamsSchema = z.object({
       (val) => !val || /^[a-zA-Z0-9,-]+$/.test(val),
       'Exchange must be a comma-separated string (e.g., "binance,bybit")',
     ),
+  protocol: z.enum(['xyz', 'flx', 'vntl', 'hyna', 'km', 'cash']).optional(),
 });
 
 export type FundingRateParams = z.input<typeof FundingRateParamsSchema>;

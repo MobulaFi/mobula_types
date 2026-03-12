@@ -18,6 +18,7 @@ export const FundingPayloadSchema = z.object({
 
       return requestedExchanges.length > 0 ? requestedExchanges : validExchanges;
     }),
+  protocol: z.enum(['xyz', 'flx', 'vntl', 'hyna', 'km', 'cash']).optional(),
   interval: z.number().optional().default(5),
   subscriptionId: z.string().optional(),
   subscriptionTracking: z.string().optional(),
