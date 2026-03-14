@@ -80,11 +80,7 @@ export const WalletPositionsParamsSchema = z.object({
 });
 
 /** Fields accepted at runtime but hidden from SDK types and OpenAPI spec */
-const WALLET_POSITIONS_HIDDEN = [
-  'blockchain',
-  '_backfillPositions',
-  '_backfillSwapsAndPositions',
-] as const;
+const WALLET_POSITIONS_HIDDEN = ['blockchain', '_backfillPositions', '_backfillSwapsAndPositions'] as const;
 type WalletPositionsHiddenFields = (typeof WALLET_POSITIONS_HIDDEN)[number];
 
 export type WalletPositionsParams = SDKInput<typeof WalletPositionsParamsSchema, WalletPositionsHiddenFields>;
@@ -233,3 +229,71 @@ export type WalletPositionResponse = z.infer<typeof singlePositionOutputSchema>;
 type CleanBatchItem = Omit<z.input<typeof SinglePositionItemSchema>, SinglePositionHiddenFields>;
 export type WalletPositionBatchParams = CleanBatchItem[] | { items: CleanBatchItem[]; instanceTracking?: boolean };
 export type WalletPositionBatchResponse = z.infer<typeof SinglePositionBatchResponseSchema>;
+
+// ── Batch Positions (multi-wallet) ──────────────────────────────────────────
+
+// Per-wallet item in a batch positions request
+const WalletPositionsBatchItemSchema = z.object({
+  wallet: z.string(),
+  blockchains: z.array(z.string()).optional(),
+  limit: z.number().min(1).max(500).optional().default(100),
+  offset: z.number().min(0).optional().default(0),
+  sortBy: PositionSortBySchema.optional(),
+  order: z.enum(['asc', 'desc']).optional().default('desc'),
+  useSwapRecipient: z.boolean().optional().default(false),
+  includeAllBalances: z.boolean().optional().default(false),
+});
+
+// Batch positions params - supports array or object with items (max 10 wallets)
+export const WalletPositionsBatchParamsSchema = z.union([
+  z.array(WalletPositionsBatchItemSchema).max(10),
+  z.object({
+    items: z.array(WalletPositionsBatchItemSchema).max(10),
+  }),
+]);
+
+export type WalletPositionsBatchItemInput = z.infer<typeof WalletPositionsBatchItemSchema>;
+
+// Response for a single wallet within the batch
+const WalletPositionsBatchResultSchema = z.object({
+  wallet: z.string(),
+  data: z.array(tokenPositionSchema),
+  walletMetadata: WalletMetadataSchema.optional(),
+  pagination: WalletPositionsPaginationSchema.optional(),
+});
+
+// Full batch response
+export const WalletPositionsBatchResponseSchema = z.object({
+  payload: z.array(WalletPositionsBatchResultSchema.or(z.object({ wallet: z.string(), error: z.string() })).nullable()),
+  hostname: z.string().optional(),
+});
+
+export type WalletPositionsBatchResult = z.infer<typeof WalletPositionsBatchResultSchema>;
+export type WalletPositionsBatchResponse = z.infer<typeof WalletPositionsBatchResponseSchema>;
+
+// OpenAPI-compatible batch positions schemas
+const WalletPositionsBatchItemSchemaOpenAPI = createOpenAPIParams(WalletPositionsBatchItemSchema, {
+  omit: [],
+  describe: {
+    wallet: 'Wallet address',
+    blockchains: 'Array of blockchain IDs (e.g., ["ethereum","base"]). If omitted, all chains.',
+    limit: 'Number of positions per page (1-500, default: 100)',
+    offset: 'Offset for pagination (default: 0)',
+    sortBy: 'Sort field (default: lastActivity)',
+    order: 'Sort order (default: desc)',
+    useSwapRecipient: 'Use swap recipient mode',
+    includeAllBalances: 'Include all tokens the wallet holds',
+  },
+});
+
+export const WalletPositionsBatchParamsSchemaOpenAPI = z.union([
+  z.array(WalletPositionsBatchItemSchemaOpenAPI),
+  z.object({
+    items: z.array(WalletPositionsBatchItemSchemaOpenAPI),
+  }),
+]);
+
+// SDK type aliases for batch positions
+export type WalletPositionsBatchParams =
+  | z.input<typeof WalletPositionsBatchItemSchema>[]
+  | { items: z.input<typeof WalletPositionsBatchItemSchema>[] };

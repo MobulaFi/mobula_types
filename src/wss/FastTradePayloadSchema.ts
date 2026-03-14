@@ -14,6 +14,7 @@ export const FastTradesPayloadSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  maxUpdatesPerMinute: z.coerce.number().optional(),
 });
 
 export type FastTradesPayloadType = z.input<typeof FastTradesPayloadSchema>;

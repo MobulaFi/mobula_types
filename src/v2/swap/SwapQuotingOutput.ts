@@ -21,6 +21,8 @@ const EVMTransactionSchema = z.object({
   chainId: z.number(),
   /** Address the user must approve the sell token to (defaults to `to` if not set) */
   approvalAddress: z.string().optional(),
+  /** List of token approvals the user must execute before the swap */
+  approvals: z.array(z.object({ token: z.string(), spender: z.string() })).optional(),
 });
 
 const TokenInfoSchema = z.object({
