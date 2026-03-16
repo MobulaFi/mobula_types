@@ -13,6 +13,8 @@ export const TokenPositionsParamsSchema = z.object({
   limit: z.coerce.number().optional().default(100),
   offset: z.coerce.number().optional().default(0),
   walletAddresses: stringOrArray.optional(),
+  /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
+  useSwapRecipient: z.coerce.boolean().optional().default(false),
 });
 
 export type TokenPositionsParams = z.input<typeof TokenPositionsParamsSchema>;

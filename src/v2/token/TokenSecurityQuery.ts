@@ -16,9 +16,15 @@ export const TokenSecurityQuery = z.object({
     if (val === 'false') return false;
     return val;
   }, z.boolean().optional()),
+  // Secret flag to force honeypot simulation (same deal as above)
+  _forceHoneypotAnalysis: z.preprocess((val) => {
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+    return val;
+  }, z.boolean().optional()),
 });
 
-const TOKEN_SECURITY_HIDDEN = ['instanceTracking', '_forceAnalysis'] as const;
+const TOKEN_SECURITY_HIDDEN = ['instanceTracking', '_forceAnalysis', '_forceHoneypotAnalysis'] as const;
 type TokenSecurityHiddenFields = (typeof TOKEN_SECURITY_HIDDEN)[number];
 
 export type TokenSecurityQueryType = SDKInput<typeof TokenSecurityQuery, TokenSecurityHiddenFields>;
