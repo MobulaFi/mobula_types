@@ -15,6 +15,8 @@ export const TokenPositionsParamsSchema = z.object({
   walletAddresses: stringOrArray.optional(),
   /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
   useSwapRecipient: z.coerce.boolean().optional().default(false),
+  /** Include fees in response (total_fees_paid_usd from wallet_positions_recipients) */
+  includeFees: z.coerce.boolean().optional().default(false),
 });
 
 export type TokenPositionsParams = z.input<typeof TokenPositionsParamsSchema>;
@@ -28,6 +30,8 @@ export const TokenPositionsParamsSchemaOpenAPI = createOpenAPIParams(TokenPositi
     limit: 'Maximum number of results (default: 100)',
     offset: 'Offset for pagination',
     walletAddresses: 'Comma-separated wallet addresses to filter',
+    useSwapRecipient: 'Use swap recipient mode for accurate Account Abstraction tracking',
+    includeFees: 'Include total fees paid (gas + platform + MEV) and deduct from PnL',
   },
 });
 
@@ -43,6 +47,8 @@ export const TokenPositionOutput = z.object({
   realizedPnlUSD: z.string(),
   unrealizedPnlUSD: z.string(),
   totalPnlUSD: z.string(),
+  /** Total fees paid on this position (gas + platform + mev fees) - only present when includeFees is enabled */
+  totalFeesPaidUSD: z.string().optional(),
   buys: z.number(),
   sells: z.number(),
   volumeBuyToken: z.string(),
