@@ -114,3 +114,4 @@ export * from './wss/PositionPayloadSchema.ts';
 export * from './wss/pulse/PausePulsePayloadSchema.ts';
 export * from './wss/stream/StreamPayloadSchema.ts';
 export * from './wss/TokenDetailsPayloadSchema.ts';
+export * from './x402/X402AgentSchemas.ts';
