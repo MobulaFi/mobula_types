@@ -64,35 +64,128 @@ export const EnrichedTradesParamsSchemaOpenAPI = createOpenAPIParams(EnrichedTra
 });
 
 /**
- * Enriched trade output - BaseMessageType as Zod schema
- * Same format as WebSocket stream enriched swaps
+ * Enriched trade output — matches the WebSocket stream `swap-enriched` event format.
+ *
+ * The REST endpoint mirrors the stream's BuildMessageReturn (CuratedSwap + deriveSwapView fields).
+ * All field names are camelCase, matching the stream output exactly.
+ *
+ * ## Fields NOT available from REST (only present in real-time stream)
+ *
+ * These fields exist in the stream but are populated in-memory by the extractors and never
+ * persisted to the warehouse DB. They will be absent from REST responses:
+ *
+ * - `rawPostBalanceRecipient0` / `rawPostBalanceRecipient1` — recipient token balances after swap
+ * - `rawPostBalanceNativeSender` / `rawPostBalanceNativeRecipient` — native SOL balances (Solana only)
+ * - `miniBlockSlot` — Solana mini-block ordering slot (internal to swap-extractor)
+ * - `blockHeight` / `blockHash` / `logIndex` / `transactionIndex` — returned as null (not stored in warehouse)
+ *
+ * ## REST-only enrichments (not in stream)
+ *
+ * - `labels` — wallet labels (sniper, insider, bundler, dev, etc.)
+ * - `walletMetadata` — entity name/label for known wallets
+ * - `platformMetadata` — DEX platform metadata (name, logo, etc.)
  */
 export const EnrichedTradeOutput = z.object({
+  // CuratedSwap core fields
+  addressToken0: z.string(),
+  addressToken1: z.string(),
+  amount0: z.number(),
+  amount1: z.number(),
+  amountUSD: z.number().optional(),
+  rawAmount0: z.string(),
+  rawAmount1: z.string(),
+  priceUSDToken0: z.number().optional(),
+  priceUSDToken1: z.number().optional(),
+  swapType: z.string(),
+  poolType: z.string().nullable(),
+  poolAddress: z.string(),
+  swapSenderAddress: z.string().nullable(),
+  transactionHash: z.string(),
+  transactionSenderAddress: z.string(),
+  transactionIndex: z.number().nullable(),
+  transactionSwapsCount: z.number(),
+  swapRecipient: z.string().nullable().optional(),
+  swapIndex: z.number(),
+  ratio: z.number(),
+  chainId: z.string(),
+  timestamp: z.string(),
+  blockHeight: z.unknown().nullable(),
+  blockHash: z.string().nullable(),
+  logIndex: z.number().nullable(),
+  platform: z.string().nullable().optional(),
+
+  // Raw balance fields (from warehouse DB)
+  rawPreBalance0: z.string().nullable(),
+  rawPreBalance1: z.string().nullable(),
+  rawPostBalance0: z.string().nullable(),
+  rawPostBalance1: z.string().nullable(),
+
+  // Fee fields
+  gasFeesUSD: z.number(),
+  platformFeesUSD: z.number(),
+  mevFeesUSD: z.number(),
+  totalFeesUSD: z.number(),
+  gasFeesNativeRaw: z.string(),
+  platformFeesNativeRaw: z.string(),
+  mevFeesNativeRaw: z.string(),
+  totalFeesNativeRaw: z.string(),
+
+  // deriveSwapView derived fields
+  baseToken: z.string(),
+  quoteToken: z.string(),
   pair: z.string(),
-  date: z.number(),
-  token_price: z.number(),
-  token_price_vs: z.number(),
-  token_amount: z.number(),
-  token_amount_vs: z.number(),
-  token_amount_usd: z.number().optional(),
+  date: z.coerce.date(),
+  tokenPrice: z.number(),
+  tokenPriceVs: z.number(),
+  priceNative: z.number(),
+  tokenAmount: z.number(),
+  tokenAmountVs: z.number(),
+  tokenAmountUSD: z.number().optional(),
   type: z.string(),
   operation: z.string(),
   blockchain: z.string(),
   hash: z.string(),
   sender: z.string(),
-  token_amount_raw: z.string(),
-  token_amount_raw_vs: z.string(),
+  tokenAmountRaw: z.string(),
+  tokenAmountRawVs: z.string(),
+
+  // Enrichment data
+  baseTokenData: TokenDetailsOutput.optional(),
+  quoteTokenData: TokenDetailsOutput.optional(),
+  pairData: MarketDetailsOutput.optional(),
+  marketCapUSD: z.number().optional(),
+  marketCapDilutedUSD: z.number().optional(),
+  totalSupply: z.number().optional(),
+  circulatingSupply: z.number().optional(),
+
+  // Position data
+  position: z
+    .object({
+      balance: z.number(),
+      rawBalance: z.string(),
+      amountUSD: z.number(),
+      nativeBalanceRaw: z.string(),
+      nativeBalance: z.number(),
+      buys: z.number(),
+      sells: z.number(),
+      volumeBuyToken: z.number(),
+      volumeSellToken: z.number(),
+      volumeBuy: z.number(),
+      volumeSell: z.number(),
+      avgBuyPriceUSD: z.number(),
+      avgSellPriceUSD: z.number(),
+      realizedPnlUSD: z.number(),
+      unrealizedPnlUSD: z.number(),
+      totalPnlUSD: z.number(),
+      realizedPnlPercent: z.number(),
+      unrealizedPnlPercent: z.number(),
+    })
+    .optional(),
+
+  // REST-only enrichments
   labels: z.array(z.string()).optional(),
   walletMetadata: WalletMetadataOutput.nullable().optional(),
-  pairData: MarketDetailsOutput.optional(),
-  tokenData: TokenDetailsOutput.optional(),
-  preBalanceBaseToken: z.string().nullable(),
-  preBalanceQuoteToken: z.string().nullable(),
-  postBalanceBaseToken: z.string().nullable(),
-  postBalanceQuoteToken: z.string().nullable(),
-  platform: z.string().nullable().optional(),
   platformMetadata: PlatformMetadataOutput.nullable().optional(),
-  swapRecipient: z.string().nullable().optional(),
 });
 
 export type EnrichedTradeOutputType = z.infer<typeof EnrichedTradeOutput>;
