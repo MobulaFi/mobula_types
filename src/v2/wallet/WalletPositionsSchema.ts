@@ -70,7 +70,7 @@ export const WalletPositionsParamsSchema = z.object({
   /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
   useSwapRecipient: z
     .union([z.boolean(), z.string()])
-    .default(false)
+    .default(true)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   /** Include all RPC balances, not just tokens with trading positions in DB */
   includeAllBalances: z
@@ -115,7 +115,7 @@ export const SinglePositionQuery = z.object({
   /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
   useSwapRecipient: z
     .union([z.boolean(), z.string()])
-    .default(false)
+    .default(true)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
@@ -144,7 +144,7 @@ const SinglePositionItemSchema = z.object({
   /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
   useSwapRecipient: z
     .union([z.boolean(), z.string()])
-    .default(false)
+    .default(true)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
@@ -240,7 +240,7 @@ const WalletPositionsBatchItemSchema = z.object({
   offset: z.number().min(0).optional().default(0),
   sortBy: PositionSortBySchema.optional(),
   order: z.enum(['asc', 'desc']).optional().default('desc'),
-  useSwapRecipient: z.boolean().optional().default(false),
+  useSwapRecipient: z.boolean().optional().default(true),
   includeAllBalances: z.boolean().optional().default(false),
 });
 

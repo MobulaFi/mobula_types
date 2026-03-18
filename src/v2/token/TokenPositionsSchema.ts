@@ -14,7 +14,7 @@ export const TokenPositionsParamsSchema = z.object({
   offset: z.coerce.number().optional().default(0),
   walletAddresses: stringOrArray.optional(),
   /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
-  useSwapRecipient: z.coerce.boolean().optional().default(false),
+  useSwapRecipient: z.coerce.boolean().optional().default(true),
   /** Include fees in response (total_fees_paid_usd from wallet_positions_recipients) */
   includeFees: z.coerce.boolean().optional().default(false),
 });

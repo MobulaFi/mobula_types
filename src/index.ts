@@ -87,6 +87,7 @@ export * from './v2/token/TokenSecurityOutput.ts';
 export * from './v2/token/TokenSecurityQuery.ts';
 export * from './v2/token/TokenSecuritySchema.ts';
 export * from './v2/token/TokenTradesSchema.ts';
+export * from './v2/trades/EnrichedSwapsSchema.ts';
 export * from './v2/trades/TradesFiltersSchema.ts';
 export * from './v2/wallet/WalletActivityV2Schema.ts';
 export * from './v2/wallet/WalletAnalysisQuerySchema.ts';

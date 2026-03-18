@@ -17,7 +17,7 @@ export const PositionPayloadSchema = z.object({
   /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
   useSwapRecipient: z
     .union([z.boolean(), z.string()])
-    .default(false)
+    .default(true)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
@@ -39,7 +39,7 @@ export const PositionsPayloadSchema = z.object({
   /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
   useSwapRecipient: z
     .union([z.boolean(), z.string()])
-    .default(false)
+    .default(true)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
