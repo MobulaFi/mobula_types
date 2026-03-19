@@ -8,6 +8,7 @@ export const HoldersPayloadSchema = z.object({
       blockchain: z.string(),
     }),
   ),
+  sortBy: z.enum(['balance', 'realizedPnl']).default('balance'),
   subscriptionId: z.string().optional(),
   subscriptionTracking: z
     .union([z.boolean(), z.string()])
