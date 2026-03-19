@@ -96,3 +96,55 @@ export const TokenPositionsResponseSchema = z.object({
 export type TokenPositionsResponse = z.infer<typeof TokenPositionsResponseSchema>;
 
 export type TokenPositionsOutputResponse = z.infer<typeof TokenPositionOutput>;
+
+// Batch schemas
+const TokenPositionsBatchItemSchema = z.object({
+  blockchain: z.string().optional(),
+  address: z.string().optional(),
+  label: z.nativeEnum(Tags).optional(),
+  limit: z.coerce.number().optional().default(100),
+  offset: z.coerce.number().optional().default(0),
+  walletAddresses: stringOrArray.optional(),
+  useSwapRecipient: z.coerce.boolean().optional().default(true),
+  includeFees: z.coerce.boolean().optional().default(false),
+});
+
+export const TokenPositionsBatchParamsSchema = z.union([
+  z.array(TokenPositionsBatchItemSchema).max(10),
+  z.object({ items: z.array(TokenPositionsBatchItemSchema).max(10) }),
+  TokenPositionsBatchItemSchema,
+]);
+
+export type TokenPositionsBatchParams = z.input<typeof TokenPositionsBatchParamsSchema>;
+
+const TokenPositionsBatchItemSchemaOpenAPI = createOpenAPIParams(TokenPositionsBatchItemSchema, {
+  describe: {
+    blockchain: 'Blockchain name or chain ID',
+    address: 'Token contract address',
+    label: 'Filter by wallet label (e.g. sniper, bundler, insider)',
+    limit: 'Maximum number of results (default: 100)',
+    offset: 'Offset for pagination',
+    walletAddresses: 'Comma-separated wallet addresses to filter',
+    useSwapRecipient: 'Use swap recipient mode for accurate Account Abstraction tracking',
+    includeFees: 'Include total fees paid (gas + platform + MEV) and deduct from PnL',
+  },
+});
+
+export const TokenPositionsBatchParamsSchemaOpenAPI = z.union([
+  z.array(TokenPositionsBatchItemSchemaOpenAPI),
+  z.object({ items: z.array(TokenPositionsBatchItemSchemaOpenAPI) }),
+]);
+
+export const TokenPositionsBatchResultSchema = z.object({
+  address: z.string().optional(),
+  blockchain: z.string().optional(),
+  data: z.array(TokenPositionOutput),
+  totalCount: z.number(),
+});
+
+export const TokenPositionsBatchResponseSchema = z.object({
+  payload: z.array(TokenPositionsBatchResultSchema.or(z.object({ error: z.string().optional() }))),
+  hostname: z.string().optional(),
+});
+
+export type TokenPositionsBatchResponse = z.infer<typeof TokenPositionsBatchResponseSchema>;
