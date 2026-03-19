@@ -35,6 +35,13 @@ const TokenDetailsSchema = z
     factory: z.string().nullable().optional(),
     source: z.string().nullable().optional(),
     sourceFactory: z.string().nullable().optional(),
+    sourceMetadata: z
+      .object({
+        name: z.string(),
+        logo: z.string(),
+      })
+      .nullable()
+      .optional(),
 
     liquidityUSD: z.coerce.number().optional(),
     liquidityMaxUSD: z.coerce.number().optional(),

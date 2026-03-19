@@ -67,3 +67,25 @@ export const WalletLabelsV2ParamsSchema = z.object({
   walletAddresses: z.string().optional(),
   tokenAddress: z.string().optional(),
 });
+
+// Reverse search: find wallets by entity name / type / label
+export const WalletLabelsSearchParamsSchema = z.object({
+  entityName: z.string().optional(),
+  entityType: z.string().optional(),
+  label: z.string().optional(),
+  offset: z.coerce.number().min(0).optional().default(0),
+  limit: z.coerce.number().min(1).max(100).optional().default(20),
+});
+
+export type WalletLabelsSearchParams = z.input<typeof WalletLabelsSearchParamsSchema>;
+
+export const WalletLabelsSearchResponseSchema = z.object({
+  data: WalletLabelsResponseSchema.shape.data,
+  pagination: z.object({
+    total: z.number(),
+    offset: z.number(),
+    limit: z.number(),
+  }),
+});
+
+export type WalletLabelsSearchResponse = z.infer<typeof WalletLabelsSearchResponseSchema>;
