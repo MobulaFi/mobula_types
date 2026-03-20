@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const EVMSecurityFlagsSchema = z.object({
-  buyTax: z.string().optional(),
-  sellTax: z.string().optional(),
+  buyTax: z.coerce.string().optional(),
+  sellTax: z.coerce.string().optional(),
   transferPausable: z.boolean().optional(),
   top10Holders: z.string().optional(),
   isBlacklisted: z.boolean().optional(),
@@ -23,8 +23,8 @@ export const EVMSecurityFlagsSchema = z.object({
 export type EVMSecurityFlags = z.infer<typeof EVMSecurityFlagsSchema>;
 
 export const SolanaSecurityFlagsSchema = z.object({
-  buyTax: z.string().optional(),
-  sellTax: z.string().optional(),
+  buyTax: z.coerce.string().optional(),
+  sellTax: z.coerce.string().optional(),
   transferPausable: z.boolean().optional(),
   top10Holders: z.string().optional(),
   isBlacklisted: z.boolean().optional(),
