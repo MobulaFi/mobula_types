@@ -5,6 +5,7 @@ export const FeedPayloadSchema = z.discriminatedUnion('kind', [
     kind: z.literal('asset_ids'),
     asset_ids: z.array(z.number()).optional(),
     quote_id: z.number().optional().nullable(),
+    tag: z.string().max(50).optional(),
   }),
   z.object({
     kind: z.literal('address'),
@@ -20,9 +21,11 @@ export const FeedPayloadSchema = z.discriminatedUnion('kind', [
         blockchain: z.string(),
       })
       .optional(),
+    tag: z.string().max(50).optional(),
   }),
   z.object({
     kind: z.literal('all'),
+    tag: z.string().max(50).optional(),
   }),
 ]);
 

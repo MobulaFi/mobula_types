@@ -19,6 +19,7 @@ export const PositionPayloadSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(true)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  tag: z.string().max(50).optional(),
 });
 
 export type PositionPayloadType = z.infer<typeof PositionPayloadSchema>;
@@ -41,6 +42,7 @@ export const PositionsPayloadSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(true)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  tag: z.string().max(50).optional(),
 });
 
 export type PositionsPayload = z.infer<typeof PositionsPayloadSchema>;

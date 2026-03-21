@@ -10,6 +10,7 @@ export const StreamPayloadSchema = z.object({
   subscriptionId: z.string().optional(),
   subscriptionTracking: z.string().optional(),
   debugSubscriptionId: z.string().optional(),
+  tag: z.string().max(50).optional(),
 });
 
 export type StreamPayloadType = z.infer<typeof StreamPayloadSchema>;
@@ -43,6 +44,7 @@ export const UpdateStreamPayloadSchema = z.object({
   chainIds: z.array(z.string()).optional(),
   events: z.array(z.string()).optional(),
   subscriptionTracking: z.string().optional(),
+  tag: z.string().max(50).optional(),
 });
 
 export type UpdateStreamPayloadType = z.input<typeof UpdateStreamPayloadSchema>;

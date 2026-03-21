@@ -26,6 +26,7 @@ export const OhlcvPayloadSchema = z.object({
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   maxUpdatesPerMinute: z.number().optional(),
+  tag: z.string().max(50).optional(),
 });
 
 export type OhlcvPayloadType = z.input<typeof OhlcvPayloadSchema>;

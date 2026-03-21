@@ -14,6 +14,7 @@ export const HoldersPayloadSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  tag: z.string().max(50).optional(),
 });
 
 export type HoldersPayloadType = z.input<typeof HoldersPayloadSchema>;

@@ -13,6 +13,7 @@ export const BalancePayloadSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  tag: z.string().max(50).optional(),
 });
 
 export type BalancePayload = z.infer<typeof BalancePayloadSchema>;

@@ -72,6 +72,14 @@ export const TokenDetailsOutput = z
     priceChange12hPercentage: z.coerce.number().default(0),
     priceChange24hPercentage: z.coerce.number().default(0),
 
+    poolPriceChange1minPercentage: z.coerce.number().default(0),
+    poolPriceChange5minPercentage: z.coerce.number().default(0),
+    poolPriceChange1hPercentage: z.coerce.number().default(0),
+    poolPriceChange4hPercentage: z.coerce.number().default(0),
+    poolPriceChange6hPercentage: z.coerce.number().default(0),
+    poolPriceChange12hPercentage: z.coerce.number().default(0),
+    poolPriceChange24hPercentage: z.coerce.number().default(0),
+
     volume1minUSD: z.coerce.number().default(0),
     volume5minUSD: z.coerce.number().default(0),
     volume15minUSD: z.coerce.number().default(0),

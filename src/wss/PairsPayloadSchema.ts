@@ -16,6 +16,7 @@ export const PairsPayloadSchema = z.object({
     .union([z.boolean(), z.string()])
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  tag: z.string().max(50).optional(),
 });
 
 export type PairsPayloadType = z.input<typeof PairsPayloadSchema>;

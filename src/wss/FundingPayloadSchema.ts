@@ -22,6 +22,7 @@ export const FundingPayloadSchema = z.object({
   interval: z.number().optional().default(5),
   subscriptionId: z.string().optional(),
   subscriptionTracking: z.string().optional(),
+  tag: z.string().max(50).optional(),
 });
 
 export type FundingPayloadType = z.input<typeof FundingPayloadSchema>;

@@ -15,6 +15,7 @@ export const FastTradesPayloadSchema = z.object({
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   maxUpdatesPerMinute: z.coerce.number().optional(),
+  tag: z.string().max(50).optional(),
 });
 
 export type FastTradesPayloadType = z.input<typeof FastTradesPayloadSchema>;
