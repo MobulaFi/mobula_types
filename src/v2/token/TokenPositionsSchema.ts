@@ -14,9 +14,15 @@ export const TokenPositionsParamsSchema = z.object({
   offset: z.coerce.number().optional().default(0),
   walletAddresses: stringOrArray.optional(),
   /** Use swap recipient mode (query wallet_positions_recipients table instead of wallet_positions) */
-  useSwapRecipient: z.coerce.boolean().optional().default(true),
+  useSwapRecipient: z
+    .union([z.boolean(), z.string()])
+    .default(true)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   /** Include fees in response (total_fees_paid_usd from wallet_positions_recipients) */
-  includeFees: z.coerce.boolean().optional().default(false),
+  includeFees: z
+    .union([z.boolean(), z.string()])
+    .default(false)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
 export type TokenPositionsParams = z.input<typeof TokenPositionsParamsSchema>;
@@ -105,8 +111,14 @@ const TokenPositionsBatchItemSchema = z.object({
   limit: z.coerce.number().optional().default(100),
   offset: z.coerce.number().optional().default(0),
   walletAddresses: stringOrArray.optional(),
-  useSwapRecipient: z.coerce.boolean().optional().default(true),
-  includeFees: z.coerce.boolean().optional().default(false),
+  useSwapRecipient: z
+    .union([z.boolean(), z.string()])
+    .default(true)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
+  includeFees: z
+    .union([z.boolean(), z.string()])
+    .default(false)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
 export const TokenPositionsBatchParamsSchema = z.union([

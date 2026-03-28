@@ -1,4 +1,5 @@
 export * from './misc/ApiKeysQueries.ts';
+export * from './mpp/MppAgentSchemas.ts';
 export * from './utils/constants/constants.ts';
 ///// FUNCTIONS
 export * from './utils/functions/bigintAbs.ts';
@@ -54,7 +55,6 @@ export * from './v1/wallet/HistorySchema.ts';
 export * from './v1/wallet/WalletLabelSchema.ts';
 export * from './v1/wallet/WalletNFTSchema.ts';
 export * from './v1/wallet/WalletPortfolioSchema.ts';
-export * from './v1/wallet/WalletSmartMoneySchema.ts';
 export * from './v1/wallet/WalletTradesSchema.ts';
 export * from './v1/wallet/WalletTransactionSchema.ts';
 export * from './v1/webhook/WebhookSchema.ts';

@@ -242,6 +242,7 @@ const WalletPositionsBatchItemSchema = z.object({
   order: z.enum(['asc', 'desc']).optional().default('desc'),
   useSwapRecipient: z.boolean().optional().default(true),
   includeAllBalances: z.boolean().optional().default(false),
+  _backfillPositions: z.boolean().optional().default(false),
 });
 
 // Batch positions params - supports array or object with items (max 10 wallets)
@@ -273,7 +274,7 @@ export type WalletPositionsBatchResponse = z.infer<typeof WalletPositionsBatchRe
 
 // OpenAPI-compatible batch positions schemas
 const WalletPositionsBatchItemSchemaOpenAPI = createOpenAPIParams(WalletPositionsBatchItemSchema, {
-  omit: [],
+  omit: ['_backfillPositions'],
   describe: {
     wallet: 'Wallet address',
     blockchains: 'Array of blockchain IDs (e.g., ["ethereum","base"]). If omitted, all chains.',

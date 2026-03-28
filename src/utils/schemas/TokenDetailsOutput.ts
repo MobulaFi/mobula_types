@@ -44,6 +44,13 @@ export const TokenDetailsOutput = z
       })
       .nullable()
       .optional(),
+    sourceFactoryMetadata: z
+      .object({
+        name: z.string(),
+        logo: z.string(),
+      })
+      .nullable()
+      .optional(),
 
     liquidityUSD: z.coerce.number().optional(),
     liquidityMaxUSD: z.coerce.number().optional(),

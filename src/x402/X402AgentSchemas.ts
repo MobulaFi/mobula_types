@@ -12,7 +12,7 @@ export const X402_AGENT_PAYMENT_FREQUENCY = z
   .transform((s) => s?.trim().toLowerCase() ?? '')
   .pipe(z.enum(['monthly', 'yearly']));
 
-/** Query params for GET /x402/agent/subscribe */
+/** Query params for GET /agent/x402/subscribe */
 export const X402AgentSubscribeQuerySchema = z.object({
   plan: X402_AGENT_PLAN,
   payment_frequency: X402_AGENT_PAYMENT_FREQUENCY,
@@ -34,7 +34,7 @@ export const X402AgentCredentialsResponseSchema = z.object({
 
 export type X402AgentCredentialsResponse = z.infer<typeof X402AgentCredentialsResponseSchema>;
 
-/** Query params for GET /x402/agent/top-up */
+/** Query params for GET /agent/x402/top-up */
 export const X402AgentTopUpQuerySchema = z.object({
   agent_id: z.string().min(1),
   amount_usd: z.coerce.number().positive(),

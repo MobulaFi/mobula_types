@@ -25,7 +25,12 @@ export type TokenPriceAtParams = z.input<typeof TokenPriceAtParamsSchema>;
 export type TokenPriceAtBatchParams = z.input<typeof TokenPriceAtBatchParamsSchema>;
 
 const TokenPriceAtItemResponseSchema = z.object({
+  name: z.string().nullable(),
+  symbol: z.string().nullable(),
+  logo: z.string().nullable(),
   priceUSD: z.number(),
+  marketCapUSD: z.number().nullable(),
+  marketCapDilutedUSD: z.number().nullable(),
   timestamp: z.number(),
   swapTimestamp: z.number(),
   poolAddress: z.string(),

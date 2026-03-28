@@ -31,7 +31,10 @@ export const EnrichedTradesParamsSchema = z.object({
   transactionSenderAddresses: stringOrArray.optional().refine((arr) => !arr || arr.length <= 25, {
     message: 'Maximum 25 transaction sender addresses allowed',
   }),
-  useSwapRecipient: z.coerce.boolean().optional().default(true),
+  useSwapRecipient: z
+    .union([z.boolean(), z.string()])
+    .default(true)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   maxAmountUSD: z.coerce.number().optional(),
   minAmountUSD: z.coerce.number().optional(),
   fromDate: DateQuery.transform((val) => val ?? undefined),

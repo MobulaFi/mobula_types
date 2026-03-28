@@ -31,7 +31,10 @@ export const TokenTradesParamsSchema = z.object({
     message: 'Maximum 25 transaction sender addresses allowed',
   }),
   /** If true, filter by swap_recipient_address; if false, filter by transaction_sender_address. Same semantics as wallet positions. Default: false. */
-  useSwapRecipient: z.coerce.boolean().optional().default(true),
+  useSwapRecipient: z
+    .union([z.boolean(), z.string()])
+    .default(true)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   maxAmountUSD: z.coerce.number().optional(),
   minAmountUSD: z.coerce.number().optional(),
   fromDate: DateQuery.transform((val) => val ?? undefined),
