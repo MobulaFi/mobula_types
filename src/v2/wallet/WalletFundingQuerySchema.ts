@@ -17,6 +17,21 @@ export const WalletFundingResponseSchema = z.object({
     amount: z.string().nullable(),
     fromWalletLogo: z.string().nullable(),
     fromWalletTag: z.string().nullable(),
+    fromWalletMetadata: z
+      .object({
+        entityName: z.string().nullable(),
+        entityLogo: z.string().nullable(),
+        entityLabels: z.array(z.string()),
+        entityType: z.string().nullable(),
+        entityDescription: z.string().nullable(),
+        entityTwitter: z.string().nullable(),
+        entityWebsite: z.string().nullable(),
+        entityGithub: z.string().nullable(),
+        entityDiscord: z.string().nullable(),
+        entityTelegram: z.string().nullable(),
+      })
+      .nullable()
+      .optional(),
   }),
 });
 

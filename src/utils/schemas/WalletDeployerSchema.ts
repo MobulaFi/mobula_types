@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { TokenDetailsOutput } from './TokenDetailsOutput.ts';
+import { WalletMetadataOutput } from './WalletMetadataOutput.ts';
 
 export const FundingInfoSchema = z.object({
   from: z.string().nullable(),
@@ -19,6 +20,7 @@ export const FundingInfoSchema = z.object({
     .nullable(),
   fromWalletLogo: z.string().nullable(),
   fromWalletTag: z.string().nullable(),
+  fromWalletMetadata: WalletMetadataOutput.nullable().optional(),
 });
 
 export type FundingInfo = z.infer<typeof FundingInfoSchema>;
@@ -50,8 +52,12 @@ export const tokenPositionSchema = z.object({
   realizedPnlUSD: z.number(),
   unrealizedPnlUSD: z.number(),
   totalPnlUSD: z.number(),
-  /** Total fees paid on this position (gas + platform + mev fees) - only present when using swap recipient mode */
-  totalFeesPaidUSD: z.number().optional(),
+  /** Total fees paid on this position (gas + platform + mev fees) */
+  totalFeesPaidUSD: z.number().default(0),
+  /** Fees paid on buy trades only */
+  buyFeesPaidUSD: z.number().default(0),
+  /** Fees paid on sell trades only */
+  sellFeesPaidUSD: z.number().default(0),
   firstDate: z.coerce.date().nullable(),
   lastDate: z.coerce.date().nullable(),
   // Token-specific labels (bundler, sniper, insider, etc.)

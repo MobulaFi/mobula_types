@@ -44,7 +44,7 @@ export type MarketOHLCVHistoryInferType = z.infer<typeof MarketOHLCVHistoryParam
 const MarketOHLCVHistoryArraySchema = z
   .array(MarketOHLCVHistoryItemSchema)
   .min(1, 'At least one market is required')
-  .max(10, 'Maximum 10 markets per request');
+  .max(50, 'Maximum 50 markets per request');
 
 // POST request schema - supports both array and object with 'markets' key
 export const MarketOHLCVHistoryBatchParamsSchema = z.union([

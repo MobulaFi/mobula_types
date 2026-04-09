@@ -99,6 +99,8 @@ export const TokenTradeOutput = z.object({
   marketAddresses: z.array(z.string()).optional(),
   baseTokenPriceUSD: z.number(),
   quoteTokenPriceUSD: z.number(),
+  baseTokenMarketCapUSD: z.number().nullable().optional(),
+  quoteTokenMarketCapUSD: z.number().nullable().optional(),
   // Labels (sniper, bundler, insider, dev, proTrader, smartTrader, freshTrader)
   labels: z.array(z.string()).nullable().optional().default([]),
   // Wallet metadata from scraping_wallets (entity info)
@@ -145,6 +147,8 @@ export const SingleTokenTradeOutput = z.object({
   marketAddresses: z.array(z.string()).optional(),
   baseTokenPriceUSD: z.number(),
   quoteTokenPriceUSD: z.number(),
+  baseTokenMarketCapUSD: z.number().nullable().optional(),
+  quoteTokenMarketCapUSD: z.number().nullable().optional(),
   labels: z.array(z.string()).nullable().optional().default([]),
   walletMetadata: WalletMetadataOutput.nullable().optional(),
   baseToken: TokenDetailsOutput.optional(),
@@ -261,6 +265,8 @@ export const TokenTradeOutputOpenAPI = z.object({
   marketAddresses: z.array(z.string()).optional(),
   baseTokenPriceUSD: z.number(),
   quoteTokenPriceUSD: z.number(),
+  baseTokenMarketCapUSD: z.number().nullable().optional(),
+  quoteTokenMarketCapUSD: z.number().nullable().optional(),
   // Labels (sniper, bundler, insider, dev, proTrader, smartTrader, freshTrader)
   labels: z.array(z.string()).nullable().optional().default([]),
   // Wallet metadata from scraping_wallets (entity info)

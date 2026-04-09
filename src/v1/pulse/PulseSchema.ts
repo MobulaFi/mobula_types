@@ -130,6 +130,7 @@ export const PulsePayloadParamsSchema = z.object({
               .pipe(z.number().int().min(1).max(3)),
           ])
           .optional(),
+        assetListed: z.coerce.boolean().optional(),
         pagination: z.coerce.boolean().optional(),
       }),
     )

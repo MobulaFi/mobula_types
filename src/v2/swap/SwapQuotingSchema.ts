@@ -70,25 +70,23 @@ export const SwapQuotingQuerySchema = z
       }),
     walletAddress: z.string().min(1, 'walletAddress is required'),
     excludedProtocols: z
-      .string()
+      .union([z.string(), z.array(z.string())])
       .optional()
       .transform((val) => {
         if (!val) return undefined;
-        return val
-          .split(',')
-          .map((f) => f.trim())
-          .filter((f) => f.length > 0);
+
+        const values = Array.isArray(val) ? val : val.split(',');
+        return values.map((f) => f.trim()).filter((f) => f.length > 0);
       }),
     onlyProtocols: z
-      .string()
+      .union([z.string(), z.array(z.string())])
       .optional()
       .transform((val) => {
         if (!val) return undefined;
+
         // Return raw string values - no mapping, pass directly to aggregator
-        return val
-          .split(',')
-          .map((t) => t.trim())
-          .filter((t) => t.length > 0);
+        const values = Array.isArray(val) ? val : val.split(',');
+        return values.map((t) => t.trim()).filter((t) => t.length > 0);
       }),
     poolAddress: z.string().optional(),
     onlyRouters: z
@@ -195,7 +193,7 @@ export const SwapQuotingQuerySchema = z
         throw new Error(`Invalid jitoTipLamports "${val}". Must be a positive number`);
       }),
     /**
-     * Fee percentage to charge on the swap (0.01 to 99).
+     * Fee percentage to charge on the swap (0 to 99).
      * This is the percentage of the input token amount that will be charged as a fee.
      *
      * On Solana: Fee is always taken from SOL/WSOL (native token).
@@ -205,14 +203,14 @@ export const SwapQuotingQuerySchema = z
      * Must be used together with feeWallet on Solana.
      */
     feePercentage: z
-      .string()
+      .union([z.string(), z.number()])
       .optional()
       .transform((val) => {
-        if (!val) return undefined;
+        if (val === undefined || val === null || val === '') return undefined;
 
-        const numValue = Number.parseFloat(val);
-        if (Number.isNaN(numValue) || numValue < 0.01 || numValue > 99) {
-          throw new Error('feePercentage must be between 0.01 and 99');
+        const numValue = typeof val === 'number' ? val : Number.parseFloat(val);
+        if (Number.isNaN(numValue) || numValue < 0 || numValue > 99) {
+          throw new Error('feePercentage must be between 0 and 99');
         }
 
         return numValue;

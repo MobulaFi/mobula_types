@@ -45,10 +45,10 @@ const SwapQuotingBatchItemSchema = z
      */
     jitoTipLamports: z.number().positive().optional(),
     /**
-     * Fee percentage to charge on the swap (0.01 to 99).
+     * Fee percentage to charge on the swap (0 to 99).
      * On Solana: Fee is always taken from SOL/WSOL (native token).
      */
-    feePercentage: z.number().min(0.01).max(99).optional(),
+    feePercentage: z.number().min(0).max(99).optional(),
     /**
      * Wallet address to receive fees (Solana only).
      * Required when feePercentage is set on Solana chains.

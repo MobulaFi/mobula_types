@@ -15,6 +15,7 @@ export const FastTradesPayloadSchema = z.object({
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   maxUpdatesPerMinute: z.coerce.number().optional(),
+  filterOutliers: z.coerce.boolean().default(false),
   tag: z.string().max(50).optional(),
 });
 

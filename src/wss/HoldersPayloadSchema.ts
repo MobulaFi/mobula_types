@@ -15,6 +15,7 @@ export const HoldersPayloadSchema = z.object({
     .default(false)
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   tag: z.string().max(50).optional(),
+  maxUpdatesPerMinute: z.coerce.number().optional(),
 });
 
 export type HoldersPayloadType = z.input<typeof HoldersPayloadSchema>;

@@ -66,8 +66,12 @@ export interface WalletPositionData {
   realizedPnlUSD: number;
   unrealizedPnlUSD: number;
   totalPnlUSD: number;
-  /** Total fees paid on this position (gas + platform + mev fees) - only present when includeFees is enabled */
-  totalFeesPaidUSD?: number;
+  /** Total fees paid on this position (gas + platform + mev fees) */
+  totalFeesPaidUSD: number;
+  /** Fees paid on buy trades only */
+  buyFeesPaidUSD: number;
+  /** Fees paid on sell trades only */
+  sellFeesPaidUSD: number;
   firstDate: Date | null;
   lastDate: Date | null;
   tokenDetails?: {

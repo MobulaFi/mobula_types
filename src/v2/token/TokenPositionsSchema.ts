@@ -53,8 +53,12 @@ export const TokenPositionOutput = z.object({
   realizedPnlUSD: z.string(),
   unrealizedPnlUSD: z.string(),
   totalPnlUSD: z.string(),
-  /** Total fees paid on this position (gas + platform + mev fees) - only present when includeFees is enabled */
-  totalFeesPaidUSD: z.string().optional(),
+  /** Total fees paid on this position (gas + platform + mev fees) */
+  totalFeesPaidUSD: z.string().default('0'),
+  /** Fees paid on buy trades only */
+  buyFeesPaidUSD: z.string().default('0'),
+  /** Fees paid on sell trades only */
+  sellFeesPaidUSD: z.string().default('0'),
   buys: z.number(),
   sells: z.number(),
   volumeBuyToken: z.string(),
@@ -91,6 +95,7 @@ export const TokenPositionOutput = z.object({
       .nullable(),
     fromWalletLogo: z.string().nullable(),
     fromWalletTag: z.string().nullable(),
+    fromWalletMetadata: WalletMetadataOutput.nullable().optional(),
   }),
 });
 

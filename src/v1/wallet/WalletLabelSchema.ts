@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { WalletMetadataOutput } from '../../utils/schemas/WalletMetadataOutput.ts';
 
 export const WalletLabelsParamsSchema = z.object({
   walletAddresses: z.union([z.string(), z.array(z.string()).max(100)]).optional(),
@@ -53,6 +54,7 @@ export const WalletLabelsResponseSchema = z.object({
             .nullable(),
           fromWalletTag: z.string().nullable(),
           fromWalletLogo: z.string().nullable(),
+          fromWalletMetadata: WalletMetadataOutput.nullable().optional(),
         })
         .nullable()
         .optional(),

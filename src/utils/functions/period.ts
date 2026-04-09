@@ -33,6 +33,9 @@ export default function normalizePeriod(period: string, defaultPeriod = '1h') {
     case '360':
     case '6h':
       return '6h';
+    case '720':
+    case '12h':
+      return '12h';
     case '1d':
       return '1d';
     case '1w':
@@ -68,6 +71,8 @@ export function getPeriodSeconds(period: string): number {
       return 4 * 60 * 60;
     case '6h':
       return 6 * 60 * 60;
+    case '12h':
+      return 12 * 60 * 60;
     case '1d':
       return 24 * 60 * 60;
     case '1w':
@@ -128,6 +133,11 @@ export function getBucketExpression(period: string): string {
       return `
         date_trunc('day', date)
         + floor(extract(hour from date)::int / 6) * interval '6 hour'
+      `;
+    case '12h':
+      return `
+        date_trunc('day', date)
+        + floor(extract(hour from date)::int / 12) * interval '12 hour'
       `;
     case '1d':
       return `date_trunc('day', date)`;

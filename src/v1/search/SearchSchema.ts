@@ -42,6 +42,7 @@ export const SearchParamsSchema = z.object({
           factoriesAddresses: parsed['factoriesAddresses'] || undefined,
           excludeBonded: parsed['excludeBonded'] || undefined,
           bondedOnly: parsed['bondedOnly'] || undefined,
+          bundlers_holdings_percentage: parsed['bundlers_holdings_percentage'] || undefined,
         };
       } catch {
         return {};
@@ -84,6 +85,12 @@ export const SearchParamsSchema = z.object({
           }),
         excludeBonded: z.coerce.boolean().optional().default(false),
         bondedOnly: z.coerce.boolean().optional().default(false),
+        bundlers_holdings_percentage: z
+          .object({
+            lte: z.coerce.number().optional(),
+            gte: z.coerce.number().optional(),
+          })
+          .optional(),
       }),
     ),
   mode: z.enum(['trendings', 'og']).optional().default('trendings'),

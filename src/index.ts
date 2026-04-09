@@ -60,6 +60,10 @@ export * from './v1/wallet/WalletTransactionSchema.ts';
 export * from './v1/webhook/WebhookSchema.ts';
 export * from './v2/asset/AssetDetailsSchema.ts';
 export * from './v2/asset/AssetPriceHistorySchema.ts';
+//bridge (alpha preview)
+export * from './v2/bridge/BridgeQuoteSchema.ts';
+export * from './v2/bridge/BridgeRoutesSchema.ts';
+export * from './v2/bridge/BridgeStatusSchema.ts';
 //explorer
 export * from './v2/explorer/BlockQuerySchema.ts';
 export * from './v2/market/MarketDetailsSchema.ts';

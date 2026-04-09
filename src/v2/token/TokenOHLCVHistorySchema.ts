@@ -44,7 +44,7 @@ export type TokenOHLCVHistoryInferType = z.infer<typeof TokenOHLCVHistoryParamsS
 const TokenOHLCVHistoryArraySchema = z
   .array(TokenOHLCVHistoryItemSchema)
   .min(1, 'At least one token is required')
-  .max(10, 'Maximum 10 tokens per request');
+  .max(50, 'Maximum 50 tokens per request');
 
 // POST request schema - supports both array and object with 'tokens' key
 export const TokenOHLCVHistoryBatchParamsSchema = z.union([
