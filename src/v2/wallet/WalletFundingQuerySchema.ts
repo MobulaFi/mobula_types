@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 
 // Zod schema for wallet funding query parameters
 export const WalletFundingParamsSchema = z.object({
@@ -6,6 +7,12 @@ export const WalletFundingParamsSchema = z.object({
 });
 
 export type WalletFundingParams = z.input<typeof WalletFundingParamsSchema>;
+
+export const WalletFundingParamsSchemaOpenAPI = createOpenAPIParams(WalletFundingParamsSchema, {
+  describe: {
+    wallet: 'Wallet address to get funding source for',
+  },
+});
 
 // Zod schema for wallet funding response
 export const WalletFundingResponseSchema = z.object({

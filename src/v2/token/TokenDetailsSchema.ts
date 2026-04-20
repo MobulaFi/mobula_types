@@ -4,6 +4,7 @@ import { CurrenciesParamSchema } from '../../utils/schemas/CurrencySchema.ts';
 import { TokenDetailsOutput } from '../../utils/schemas/TokenDetailsOutput.ts';
 
 const TokenDetailsItemParams = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string().optional(),
   currencies: CurrenciesParamSchema,
@@ -28,7 +29,7 @@ const TokenDetailsBatchParamsSchema = z.union([
   }),
 ]);
 
-const TOKEN_DETAILS_HIDDEN = ['instanceTracking'] as const;
+const TOKEN_DETAILS_HIDDEN = ['instanceTracking', 'blockchain'] as const;
 type TokenDetailsHiddenFields = (typeof TOKEN_DETAILS_HIDDEN)[number];
 
 export type TokenDetailsParams = SDKInput<typeof TokenDetailsParamsSchema, TokenDetailsHiddenFields>;
@@ -36,7 +37,7 @@ export type TokenDetailsParams = SDKInput<typeof TokenDetailsParamsSchema, Token
 export const TokenDetailsParamsSchemaOpenAPI = createOpenAPIParams(TokenDetailsParamsSchema, {
   omit: [...TOKEN_DETAILS_HIDDEN],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Token contract address',
     currencies: 'Comma-separated list of currencies for price conversion',
   },
@@ -45,7 +46,7 @@ export const TokenDetailsParamsSchemaOpenAPI = createOpenAPIParams(TokenDetailsP
 const TokenDetailsItemParamsOpenAPI = createOpenAPIParams(TokenDetailsItemParams, {
   omit: [...TOKEN_DETAILS_HIDDEN],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Token contract address',
     currencies: 'Comma-separated list of currencies for price conversion',
   },

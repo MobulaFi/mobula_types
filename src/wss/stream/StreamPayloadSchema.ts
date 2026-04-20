@@ -8,7 +8,10 @@ export const StreamPayloadSchema = z.object({
   events: z.array(z.enum(['swap', 'transfer', 'swap-enriched', 'block', 'order'])).nonempty(),
   authorization: z.string(),
   subscriptionId: z.string().optional(),
-  subscriptionTracking: z.string().optional(),
+  subscriptionTracking: z
+    .union([z.boolean(), z.string()])
+    .default(false)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   debugSubscriptionId: z.string().optional(),
   tag: z.string().max(50).optional(),
 });
@@ -43,7 +46,10 @@ export const UpdateStreamPayloadSchema = z.object({
   filters: FilterWithLimit.optional(),
   chainIds: z.array(z.string()).optional(),
   events: z.array(z.string()).optional(),
-  subscriptionTracking: z.string().optional(),
+  subscriptionTracking: z
+    .union([z.boolean(), z.string()])
+    .default(false)
+    .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   tag: z.string().max(50).optional(),
 });
 

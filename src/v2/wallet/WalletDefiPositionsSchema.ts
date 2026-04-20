@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 
 // ===========================================
 // Input Schema
@@ -13,10 +14,19 @@ const walletAddressSchema = z
 
 export const WalletDefiPositionsParamsSchema = z.object({
   wallet: walletAddressSchema.describe('Wallet address (EVM or Solana)'),
-  blockchains: z.string().describe('Blockchain to fetch positions from (e.g., "solana", "ethereum")'),
+  chainIds: z.string().optional().describe('Chain ID to fetch positions from (e.g., "solana:solana", "evm:1")'),
+  blockchains: z.string().optional().describe('Blockchain to fetch positions from (e.g., "solana", "ethereum")'),
 });
 
-export type WalletDefiPositionsParams = z.infer<typeof WalletDefiPositionsParamsSchema>;
+export type WalletDefiPositionsParams = Omit<z.infer<typeof WalletDefiPositionsParamsSchema>, 'blockchains'>;
+
+export const WalletDefiPositionsParamsSchemaOpenAPI = createOpenAPIParams(WalletDefiPositionsParamsSchema, {
+  omit: ['blockchains'],
+  describe: {
+    wallet: 'Wallet address (EVM or Solana)',
+    chainIds: 'Chain ID to fetch positions from (e.g., "solana:solana", "evm:1")',
+  },
+});
 
 // ===========================================
 // Output Types

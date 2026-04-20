@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 
 export const TokenSecurityQuery = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string(),
   instanceTracking: z.preprocess((val) => {
@@ -24,7 +25,7 @@ export const TokenSecurityQuery = z.object({
   }, z.boolean().optional()),
 });
 
-const TOKEN_SECURITY_HIDDEN = ['instanceTracking', '_forceAnalysis', '_forceHoneypotAnalysis'] as const;
+const TOKEN_SECURITY_HIDDEN = ['instanceTracking', '_forceAnalysis', '_forceHoneypotAnalysis', 'blockchain'] as const;
 type TokenSecurityHiddenFields = (typeof TOKEN_SECURITY_HIDDEN)[number];
 
 export type TokenSecurityQueryType = SDKInput<typeof TokenSecurityQuery, TokenSecurityHiddenFields>;
@@ -32,7 +33,7 @@ export type TokenSecurityQueryType = SDKInput<typeof TokenSecurityQuery, TokenSe
 export const TokenSecurityQueryOpenAPI = createOpenAPIParams(TokenSecurityQuery, {
   omit: [...TOKEN_SECURITY_HIDDEN],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Token contract address',
   },
 });

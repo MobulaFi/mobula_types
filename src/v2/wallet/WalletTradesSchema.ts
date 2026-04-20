@@ -6,6 +6,18 @@ export const WalletTradesV2ParamsSchema = z.object({
   wallet: z.string(),
   wallets: z.string().optional(),
   tokenAddress: z.string().optional(),
+  chainIds: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val) {
+        return val
+          .split(',')
+          .map((b) => b.trim())
+          .filter((b) => b.length > 0);
+      }
+      return [];
+    }),
   blockchains: z
     .string()
     .optional()
@@ -31,16 +43,15 @@ export const WalletTradesV2ParamsSchema = z.object({
   to: z.coerce.number().optional(),
 });
 
-export type WalletTradesV2Params = SDKInput<typeof WalletTradesV2ParamsSchema, 'wallets'>;
+export type WalletTradesV2Params = SDKInput<typeof WalletTradesV2ParamsSchema, 'wallets' | 'blockchains'>;
 export type WalletTradesV2InferType = z.infer<typeof WalletTradesV2ParamsSchema>;
 
 export const WalletTradesV2ParamsSchemaOpenAPI = createOpenAPIParams(WalletTradesV2ParamsSchema, {
-  omit: ['wallets'],
+  omit: ['wallets', 'blockchains'],
   describe: {
     wallet: 'Wallet address',
     tokenAddress: 'Filter trades involving this token contract address',
-    blockchains:
-      'Comma-separated list of blockchain IDs (e.g., "ethereum,base,solana:solana"). If omitted, all chains.',
+    chainIds: 'Comma-separated list of chain IDs (e.g., "evm:1,evm:8453,solana:solana"). If omitted, all chains.',
     limit: 'Number of trades per page (1-100, default: 50)',
     offset: 'Offset for pagination (default: 0)',
     order: 'Sort order: asc or desc (default: desc)',

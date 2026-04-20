@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 
 /**
  * V2 Token Price-At Schema
@@ -7,12 +8,22 @@ import { z } from 'zod';
  */
 
 const TokenPriceAtItemParams = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string().optional(),
   timestamp: z.coerce.number().int().positive(),
 });
 
 export const TokenPriceAtParamsSchema = TokenPriceAtItemParams;
+
+export const TokenPriceAtParamsSchemaOpenAPI = createOpenAPIParams(TokenPriceAtItemParams, {
+  omit: ['blockchain'],
+  describe: {
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
+    address: 'Token contract address',
+    timestamp: 'Unix timestamp (seconds) for historical price lookup',
+  },
+});
 
 export const TokenPriceAtBatchParamsSchema = z.union([
   z.array(TokenPriceAtItemParams),
@@ -21,7 +32,7 @@ export const TokenPriceAtBatchParamsSchema = z.union([
   }),
 ]);
 
-export type TokenPriceAtParams = z.input<typeof TokenPriceAtParamsSchema>;
+export type TokenPriceAtParams = SDKInput<typeof TokenPriceAtParamsSchema, 'blockchain'>;
 export type TokenPriceAtBatchParams = z.input<typeof TokenPriceAtBatchParamsSchema>;
 
 const TokenPriceAtItemResponseSchema = z.object({

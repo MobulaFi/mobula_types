@@ -87,6 +87,9 @@ export const TokenDetailsOutput = z
     poolPriceChange12hPercentage: z.coerce.number().default(0),
     poolPriceChange24hPercentage: z.coerce.number().default(0),
 
+    // Largest-pool LP burn share (matches market/details field). Null when uncached.
+    liquidityBurnPercentage: z.number().nullable().optional(),
+
     volume1minUSD: z.coerce.number().default(0),
     volume5minUSD: z.coerce.number().default(0),
     volume15minUSD: z.coerce.number().default(0),

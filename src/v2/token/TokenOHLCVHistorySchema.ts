@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import normalizePeriod from '../../utils/functions/period.ts';
 import DateQuery from '../../utils/schemas/DateQuery.ts';
 
@@ -16,7 +17,8 @@ const booleanFromString = z
 // Single token query schema (shared between GET params and POST body items)
 const TokenOHLCVHistoryItemSchema = z.object({
   address: z.string(),
-  chainId: z.string(),
+  chainId: z.string().optional(),
+  blockchain: z.string().optional(),
   from: DateQuery.transform((val) => val ?? 0),
   to: DateQuery.transform((val) => val ?? new Date()),
   period: z
@@ -31,14 +33,27 @@ const TokenOHLCVHistoryItemSchema = z.object({
 });
 
 // ==================== TOKEN OHLCV ====================
-// GET: address + chainId required
+// GET: address + chainId/blockchain required
 export const TokenOHLCVHistoryParamsSchema = TokenOHLCVHistoryItemSchema.refine(
-  (data) => data.address && data.chainId,
+  (data) => data.address && (data.chainId || data.blockchain),
   { message: 'address and chainId are required' },
 );
 
-export type TokenOHLCVHistoryParams = z.input<typeof TokenOHLCVHistoryParamsSchema>;
+export type TokenOHLCVHistoryParams = SDKInput<typeof TokenOHLCVHistoryParamsSchema, 'blockchain'>;
 export type TokenOHLCVHistoryInferType = z.infer<typeof TokenOHLCVHistoryParamsSchema>;
+
+export const TokenOHLCVHistoryParamsSchemaOpenAPI = createOpenAPIParams(TokenOHLCVHistoryItemSchema, {
+  omit: ['blockchain'],
+  describe: {
+    address: 'Token contract address',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
+    from: 'Start date (timestamp or ISO string)',
+    to: 'End date (timestamp or ISO string)',
+    period: 'Candle period (e.g., "5m", "1h", "1d")',
+    amount: 'Maximum number of candles (max 2000)',
+    usd: 'Return USD prices (default: true)',
+  },
+});
 
 // Array schema for batch items
 const TokenOHLCVHistoryArraySchema = z

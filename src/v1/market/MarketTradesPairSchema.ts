@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { PlatformMetadataOutput } from '../../utils/schemas/PlatformMetadataOutput.ts';
+import { TokenTradeType, TradeOperation } from '../../v2/token/TokenTradesSchema.ts';
 
 const allowedFields = ['date', 'amount_usd', 'token_in_amount', 'token_out_amount'] as const;
 
@@ -63,12 +64,12 @@ export const MarketTradesPairResponseSchema = z.object({
       token_amount: z.number(),
       token_amount_vs: z.number(),
       token_amount_usd: z.number(),
-      type: z.string(),
+      type: TokenTradeType,
       sender: z.string().nullable(),
       transaction_sender_address: z.string().nullable(),
       token_amount_raw: z.string(),
       token_amount_raw_vs: z.string(),
-      operation: z.string(),
+      operation: TradeOperation,
       // Platform where the trade was executed (e.g. Photon, BullX, Maestro, etc.)
       platform: PlatformMetadataOutput.nullable().optional(),
       // Fees breakdown

@@ -33,6 +33,7 @@ export interface BaseMessageType {
   preBalanceQuoteToken: string | null;
   postBalanceBaseToken: string | null;
   postBalanceQuoteToken: string | null;
+  postBalanceRecipientBaseToken?: string | null;
   platform?: string | null;
   // Full platform metadata (id, name, logo)
   platformMetadata?: PlatformMetadataType | null;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 
 /**
  * V2 Token Price Schema
@@ -8,11 +9,20 @@ import { z } from 'zod';
 
 // Single item params (for GET and batch items)
 const TokenPriceItemParams = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string().optional(),
 });
 
 export const TokenPriceParamsSchema = TokenPriceItemParams;
+
+export const TokenPriceParamsSchemaOpenAPI = createOpenAPIParams(TokenPriceItemParams, {
+  omit: ['blockchain'],
+  describe: {
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
+    address: 'Token contract address',
+  },
+});
 
 export const TokenPriceBatchParamsSchema = z.union([
   z.array(TokenPriceItemParams),
@@ -21,7 +31,7 @@ export const TokenPriceBatchParamsSchema = z.union([
   }),
 ]);
 
-export type TokenPriceParams = z.input<typeof TokenPriceParamsSchema>;
+export type TokenPriceParams = SDKInput<typeof TokenPriceParamsSchema, 'blockchain'>;
 export type TokenPriceBatchParams = z.input<typeof TokenPriceBatchParamsSchema>;
 
 // Response item with USD suffix naming convention

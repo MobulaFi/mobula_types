@@ -3,6 +3,7 @@ import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAP
 import { CurrenciesParamSchema } from '../../utils/schemas/CurrencySchema.ts';
 
 const TokenAthItemParams = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string().optional(),
   currencies: CurrenciesParamSchema,
@@ -27,7 +28,7 @@ export const TokenAthBatchParamsSchema = z.union([
   }),
 ]);
 
-const TOKEN_ATH_HIDDEN = ['instanceTracking'] as const;
+const TOKEN_ATH_HIDDEN = ['instanceTracking', 'blockchain'] as const;
 type TokenAthHiddenFields = (typeof TOKEN_ATH_HIDDEN)[number];
 
 export type TokenAthParams = SDKInput<typeof TokenAthParamsSchema, TokenAthHiddenFields>;
@@ -36,7 +37,7 @@ export type TokenAthBatchParams = z.input<typeof TokenAthBatchParamsSchema>;
 export const TokenAthParamsSchemaOpenAPI = createOpenAPIParams(TokenAthParamsSchema, {
   omit: [...TOKEN_ATH_HIDDEN],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Token contract address',
     currencies: 'Comma-separated list of currencies for price conversion',
   },
@@ -45,7 +46,7 @@ export const TokenAthParamsSchemaOpenAPI = createOpenAPIParams(TokenAthParamsSch
 const TokenAthItemParamsOpenAPI = createOpenAPIParams(TokenAthItemParams, {
   omit: [...TOKEN_ATH_HIDDEN],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Token contract address',
     currencies: 'Comma-separated list of currencies for price conversion',
   },

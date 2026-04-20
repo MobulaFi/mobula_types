@@ -15,6 +15,7 @@ export const WalletMetadataOutput = z.object({
   entityGithub: z.string().nullable(),
   entityDiscord: z.string().nullable(),
   entityTelegram: z.string().nullable(),
+  extra: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type WalletMetadataOutput = z.infer<typeof WalletMetadataOutput>;

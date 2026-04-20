@@ -7,6 +7,7 @@ export enum Tags {
   FRESH_TRADER = 'freshTrader',
   DEV = 'dev',
   LIQUIDITY_POOL = 'liquidityPool',
+  LOCKER = 'locker',
 }
 
 export enum SwapType {

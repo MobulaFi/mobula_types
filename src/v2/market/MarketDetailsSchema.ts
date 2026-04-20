@@ -1,15 +1,18 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import { CurrenciesParamSchema } from '../../utils/schemas/CurrencySchema.ts';
 import { MarketDetailsOutput } from '../../utils/schemas/MarketDetailsOutput.ts';
 
 const MarketDetailsItemParams = z
   .object({
+    chainId: z.string().optional(),
     blockchain: z.string().optional(),
     address: z.string().optional(),
     baseToken: z.string().optional(),
     currencies: z.string().optional(),
   })
-  .transform(({ blockchain, address, baseToken, currencies }) => ({
+  .transform(({ chainId, blockchain, address, baseToken, currencies }) => ({
+    chainId,
     blockchain,
     address,
     baseToken,
@@ -26,8 +29,18 @@ const MarketDetailsBatchParamsSchema = z.union([
   }),
 ]);
 
-export type MarketDetailsParams = z.input<typeof MarketDetailsParamsSchema>;
+export type MarketDetailsParams = SDKInput<typeof MarketDetailsParamsSchema, 'blockchain'>;
 export type MarketDetailsInferType = z.infer<typeof MarketDetailsParamsSchema>;
+
+export const MarketDetailsParamsSchemaOpenAPI = createOpenAPIParams(MarketDetailsItemParams, {
+  omit: ['blockchain'],
+  describe: {
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
+    address: 'Pool/pair contract address',
+    baseToken: 'Base token address',
+    currencies: 'Comma-separated currencies for price conversion',
+  },
+});
 
 export type MarketDetailsBatchParams = z.input<typeof MarketDetailsBatchParamsSchema>;
 

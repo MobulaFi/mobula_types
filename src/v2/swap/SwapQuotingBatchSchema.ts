@@ -2,7 +2,8 @@ import { z } from 'zod';
 
 const SwapQuotingBatchItemSchema = z
   .object({
-    chainId: z.string(),
+    chainId: z.string().optional(),
+    blockchain: z.string().optional(),
     tokenIn: z.string().min(1, 'tokenIn is required'),
     tokenOut: z.string().min(1, 'tokenOut is required'),
     amount: z.number().positive('Amount must be a positive number').optional(),
@@ -62,6 +63,10 @@ const SwapQuotingBatchItemSchema = z
      * Only supported for Solana chains.
      */
     payerAddress: z.string().optional(),
+  })
+  .refine((data) => data.chainId || data.blockchain, {
+    message: 'chainId is required',
+    path: ['chainId'],
   })
   .refine((data) => (data.amount !== undefined) !== (data.amountRaw !== undefined), {
     message: 'Either amount or amountRaw must be provided (but not both)',

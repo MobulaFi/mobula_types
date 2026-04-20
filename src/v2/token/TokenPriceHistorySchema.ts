@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 
 // Supported timeframes for token price history
 const PriceHistoryTimeframe = z.enum(['5m', '15m', '1h', '24h', '7d', '30d', '1y']).default('24h');
@@ -6,18 +7,28 @@ const PriceHistoryTimeframe = z.enum(['5m', '15m', '1h', '24h', '7d', '30d', '1y
 // Single token price history params (shared between GET params and POST body items)
 const TokenPriceHistoryItemSchema = z.object({
   address: z.string(),
-  chainId: z.string(),
+  chainId: z.string().optional(),
+  blockchain: z.string().optional(),
   timeframe: PriceHistoryTimeframe,
 });
 
 // ==================== TOKEN PRICE HISTORY ====================
-// GET: address + chainId required
+// GET: address + chainId/blockchain required
 export const TokenPriceHistoryParamsSchema = TokenPriceHistoryItemSchema.refine(
-  (data) => data.address && data.chainId,
+  (data) => data.address && (data.chainId || data.blockchain),
   { message: 'address and chainId are required' },
 );
 
-export type TokenPriceHistoryParams = z.input<typeof TokenPriceHistoryParamsSchema>;
+export const TokenPriceHistoryParamsSchemaOpenAPI = createOpenAPIParams(TokenPriceHistoryItemSchema, {
+  omit: ['blockchain'],
+  describe: {
+    address: 'Token contract address',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
+    timeframe: 'Time range for price history',
+  },
+});
+
+export type TokenPriceHistoryParams = SDKInput<typeof TokenPriceHistoryParamsSchema, 'blockchain'>;
 export type TokenPriceHistoryInferType = z.infer<typeof TokenPriceHistoryParamsSchema>;
 
 // Array schema for batch items - up to 50 tokens

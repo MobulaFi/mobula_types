@@ -1,11 +1,12 @@
 import { z } from 'zod';
 import { Tags } from '../../utils/constants/constants.ts';
-import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import { stringOrArray } from '../../utils/schemas/StringOrArray.ts';
 import { WalletMetadataOutput } from '../../utils/schemas/WalletMetadataOutput.ts';
 import { PlatformMetadataSchema } from '../wallet/WalletAnalysisQuerySchema.ts';
 
 export const TokenPositionsParamsSchema = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string().optional(),
   force: z.coerce.boolean().optional().default(false),
@@ -25,12 +26,12 @@ export const TokenPositionsParamsSchema = z.object({
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
-export type TokenPositionsParams = z.input<typeof TokenPositionsParamsSchema>;
+export type TokenPositionsParams = SDKInput<typeof TokenPositionsParamsSchema, 'blockchain'>;
 
 export const TokenPositionsParamsSchemaOpenAPI = createOpenAPIParams(TokenPositionsParamsSchema, {
-  omit: ['force'],
+  omit: ['force', 'blockchain'],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Token contract address',
     label: 'Filter by wallet label (e.g. sniper, bundler, insider)',
     limit: 'Maximum number of results (default: 100)',
@@ -67,11 +68,13 @@ export const TokenPositionOutput = z.object({
   volumeSellUSD: z.string(),
   avgBuyPriceUSD: z.string(),
   avgSellPriceUSD: z.string(),
+  nativeBalance: z.string().default('0'),
+  nativeBalanceRaw: z.string().default('0'),
   walletFundAt: z.coerce.date().nullable(),
   lastActivityAt: z.coerce.date().nullable(),
   firstTradeAt: z.coerce.date().nullable(),
   lastTradeAt: z.coerce.date().nullable(),
-  // Labels (sniper, bundler, insider, dev, proTrader, smartTrader, freshTrader)
+  // Labels (sniper, bundler, insider, dev, proTrader, smartTrader, freshTrader, locker)
   labels: z.array(z.string()).nullable().optional().default([]),
   // Wallet metadata from scraping_wallets (entity info)
   walletMetadata: WalletMetadataOutput.nullable().optional(),
@@ -110,6 +113,7 @@ export type TokenPositionsOutputResponse = z.infer<typeof TokenPositionOutput>;
 
 // Batch schemas
 const TokenPositionsBatchItemSchema = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string().optional(),
   label: z.nativeEnum(Tags).optional(),
@@ -135,8 +139,9 @@ export const TokenPositionsBatchParamsSchema = z.union([
 export type TokenPositionsBatchParams = z.input<typeof TokenPositionsBatchParamsSchema>;
 
 const TokenPositionsBatchItemSchemaOpenAPI = createOpenAPIParams(TokenPositionsBatchItemSchema, {
+  omit: ['blockchain'],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Token contract address',
     label: 'Filter by wallet label (e.g. sniper, bundler, insider)',
     limit: 'Maximum number of results (default: 100)',

@@ -1,12 +1,13 @@
 import { z } from 'zod';
 import { SwapType, Tags } from '../../utils/constants/constants.ts';
-import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import DateQuery from '../../utils/schemas/DateQuery.ts';
 import { MarketDetailsOutput } from '../../utils/schemas/MarketDetailsOutput.ts';
 import { PlatformMetadataOutput } from '../../utils/schemas/PlatformMetadataOutput.ts';
 import { stringOrArray } from '../../utils/schemas/StringOrArray.ts';
 import { TokenDetailsOutput } from '../../utils/schemas/TokenDetailsOutput.ts';
 import { WalletMetadataOutput } from '../../utils/schemas/WalletMetadataOutput.ts';
+import { TokenTradeType, TradeOperation } from '../token/TokenTradesSchema.ts';
 
 /**
  * EnrichedTradesParams - Query parameters for the token/trades-enriched endpoint
@@ -16,6 +17,7 @@ import { WalletMetadataOutput } from '../../utils/schemas/WalletMetadataOutput.t
  * including full pairData (MarketDetailsOutput) and tokenData (TokenDetailsOutput).
  */
 export const EnrichedTradesParamsSchema = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string().optional(),
   offset: z.coerce.number().default(0),
@@ -41,16 +43,16 @@ export const EnrichedTradesParamsSchema = z.object({
   toDate: DateQuery.transform((val) => val ?? undefined),
 });
 
-export type EnrichedTradesParams = z.input<typeof EnrichedTradesParamsSchema>;
+export type EnrichedTradesParams = SDKInput<typeof EnrichedTradesParamsSchema, 'blockchain'>;
 export type EnrichedTradesInferType = z.infer<typeof EnrichedTradesParamsSchema>;
 
 /**
  * OpenAPI-safe params schema (stripped of transforms/effects, with descriptions)
  */
 export const EnrichedTradesParamsSchemaOpenAPI = createOpenAPIParams(EnrichedTradesParamsSchema, {
-  omit: ['useSwapRecipient'],
+  omit: ['useSwapRecipient', 'blockchain'],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Pool/pair contract address',
     offset: 'Offset for pagination (default: 0)',
     limit: 'Number of trades per page (default: 10)',
@@ -99,7 +101,7 @@ export const EnrichedTradeOutput = z.object({
   rawAmount1: z.string(),
   priceUSDToken0: z.number().optional(),
   priceUSDToken1: z.number().optional(),
-  swapType: z.string(),
+  swapType: z.nativeEnum(SwapType),
   poolType: z.string().nullable(),
   poolAddress: z.string(),
   swapSenderAddress: z.string().nullable(),
@@ -144,8 +146,8 @@ export const EnrichedTradeOutput = z.object({
   tokenAmount: z.number(),
   tokenAmountVs: z.number(),
   tokenAmountUSD: z.number().optional(),
-  type: z.string(),
-  operation: z.string(),
+  type: TokenTradeType,
+  operation: TradeOperation,
   blockchain: z.string(),
   hash: z.string(),
   sender: z.string(),

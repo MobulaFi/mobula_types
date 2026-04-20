@@ -55,8 +55,9 @@ const AssetDetailsParamsSchema = z
   .object({
     // Option 1: asset ID directly
     id: z.coerce.number().optional(),
-    // Option 2: address + chainId
+    // Option 2: address + chainId/blockchain
     address: z.string().optional(),
+    chainId: z.string().optional(),
     blockchain: z.string().optional(),
     // Limit for tokens (default 10)
     tokensLimit: z.coerce.number().min(1).max(50).default(10),
@@ -66,11 +67,16 @@ const AssetDetailsParamsSchema = z
       return val;
     }, z.boolean().optional()),
   })
-  .refine((data) => data.id !== undefined || (data.address !== undefined && data.blockchain !== undefined), {
-    message: 'Either id OR (address AND blockchain) must be provided',
-  });
+  .refine(
+    (data) =>
+      data.id !== undefined ||
+      (data.address !== undefined && (data.chainId !== undefined || data.blockchain !== undefined)),
+    {
+      message: 'Either id OR (address AND chainId) must be provided',
+    },
+  );
 
-const ASSET_DETAILS_HIDDEN = ['instanceTracking'] as const;
+const ASSET_DETAILS_HIDDEN = ['instanceTracking', 'blockchain'] as const;
 type AssetDetailsHiddenFields = (typeof ASSET_DETAILS_HIDDEN)[number];
 
 export type AssetDetailsParams = SDKInput<typeof AssetDetailsParamsSchema, AssetDetailsHiddenFields>;
@@ -83,7 +89,7 @@ export const AssetDetailsParamsSchemaOpenAPI = createOpenAPIParams(AssetDetailsP
   describe: {
     id: 'Asset ID',
     address: 'Token contract address',
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     tokensLimit: 'Maximum number of tokens to return (1-50, default: 10)',
   },
 });
@@ -100,6 +106,7 @@ export type AssetDetailsResponse = z.infer<typeof AssetDetailsResponseSchema>;
 const AssetDetailsItemSchema = z.object({
   id: z.coerce.number().optional(),
   address: z.string().optional(),
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   tokensLimit: z.coerce.number().min(1).max(50).default(10),
 });

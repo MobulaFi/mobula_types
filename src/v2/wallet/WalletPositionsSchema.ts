@@ -27,7 +27,20 @@ export const positionSortByToInternal = (sortBy: PositionSortBy): 'last_activity
 
 export const WalletPositionsParamsSchema = z.object({
   wallet: z.string(),
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
+  chainIds: z
+    .string()
+    .optional()
+    .transform((val) => {
+      if (val) {
+        return val
+          .split(',')
+          .map((b) => b.trim())
+          .filter((b) => b.length > 0);
+      }
+      return [];
+    }),
   blockchains: z
     .string()
     .optional()
@@ -80,7 +93,13 @@ export const WalletPositionsParamsSchema = z.object({
 });
 
 /** Fields accepted at runtime but hidden from SDK types and OpenAPI spec */
-const WALLET_POSITIONS_HIDDEN = ['blockchain', '_backfillPositions', '_backfillSwapsAndPositions'] as const;
+const WALLET_POSITIONS_HIDDEN = [
+  'chainId',
+  'blockchain',
+  'blockchains',
+  '_backfillPositions',
+  '_backfillSwapsAndPositions',
+] as const;
 type WalletPositionsHiddenFields = (typeof WALLET_POSITIONS_HIDDEN)[number];
 
 export type WalletPositionsParams = SDKInput<typeof WalletPositionsParamsSchema, WalletPositionsHiddenFields>;
@@ -89,8 +108,7 @@ export const WalletPositionsParamsSchemaOpenAPI = createOpenAPIParams(WalletPosi
   omit: [...WALLET_POSITIONS_HIDDEN],
   describe: {
     wallet: 'Wallet address',
-    blockchains:
-      'Comma-separated list of blockchain IDs (e.g., "ethereum,base,solana:solana"). If omitted, all chains.',
+    chainIds: 'Comma-separated list of chain IDs (e.g., "evm:1,evm:8453,solana:solana"). If omitted, all chains.',
     limit: 'Number of positions per page (1-500, default: 100)',
     offset: 'Offset for pagination (default: 0)',
     cursor: 'Cursor for cursor-based pagination (takes precedence over offset)',
@@ -106,6 +124,7 @@ export const WalletPositionsParamsSchemaOpenAPI = createOpenAPIParams(WalletPosi
 export const SinglePositionQuery = z.object({
   wallet: z.string(),
   asset: z.string(),
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   /** Include fees in PnL calculation (deduct total_fees_paid_usd from PnL) */
   includeFees: z
@@ -119,7 +138,7 @@ export const SinglePositionQuery = z.object({
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
 });
 
-const SINGLE_POSITION_HIDDEN = ['includeFees', 'useSwapRecipient'] as const;
+const SINGLE_POSITION_HIDDEN = ['includeFees', 'useSwapRecipient', 'blockchain'] as const;
 type SinglePositionHiddenFields = (typeof SINGLE_POSITION_HIDDEN)[number];
 
 export const SinglePositionQueryOpenAPI = createOpenAPIParams(SinglePositionQuery, {
@@ -127,7 +146,7 @@ export const SinglePositionQueryOpenAPI = createOpenAPIParams(SinglePositionQuer
   describe: {
     wallet: 'Wallet address',
     asset: 'Token contract address',
-    blockchain: 'Blockchain ID (e.g., "ethereum", "solana:solana")',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
   },
 });
 
@@ -135,7 +154,8 @@ export const SinglePositionQueryOpenAPI = createOpenAPIParams(SinglePositionQuer
 const SinglePositionItemSchema = z.object({
   wallet: z.string(),
   asset: z.string(),
-  blockchain: z.string(),
+  chainId: z.string().optional(),
+  blockchain: z.string().optional(),
   /** Include fees in PnL calculation (deduct total_fees_paid_usd from PnL) */
   includeFees: z
     .union([z.boolean(), z.string()])
@@ -167,7 +187,7 @@ const SinglePositionItemSchemaOpenAPI = createOpenAPIParams(SinglePositionItemSc
   describe: {
     wallet: 'Wallet address',
     asset: 'Token contract address',
-    blockchain: 'Blockchain ID (e.g., "ethereum", "solana:solana")',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
   },
 });
 
@@ -235,6 +255,7 @@ export type WalletPositionBatchResponse = z.infer<typeof SinglePositionBatchResp
 // Per-wallet item in a batch positions request
 const WalletPositionsBatchItemSchema = z.object({
   wallet: z.string(),
+  chainIds: z.array(z.string()).optional(),
   blockchains: z.array(z.string()).optional(),
   limit: z.number().min(1).max(500).optional().default(100),
   offset: z.number().min(0).optional().default(0),
@@ -274,10 +295,10 @@ export type WalletPositionsBatchResponse = z.infer<typeof WalletPositionsBatchRe
 
 // OpenAPI-compatible batch positions schemas
 const WalletPositionsBatchItemSchemaOpenAPI = createOpenAPIParams(WalletPositionsBatchItemSchema, {
-  omit: ['_backfillPositions'],
+  omit: ['_backfillPositions', 'blockchains'],
   describe: {
     wallet: 'Wallet address',
-    blockchains: 'Array of blockchain IDs (e.g., ["ethereum","base"]). If omitted, all chains.',
+    chainIds: 'Array of chain IDs (e.g., ["evm:1","evm:8453"]). If omitted, all chains.',
     limit: 'Number of positions per page (1-500, default: 100)',
     offset: 'Offset for pagination (default: 0)',
     sortBy: 'Sort field (default: lastActivity)',

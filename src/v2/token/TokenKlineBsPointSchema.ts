@@ -1,10 +1,12 @@
 import { z } from 'zod';
+import { type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import normalizePeriod from '../../utils/functions/period.ts';
 import DateQuery from '../../utils/schemas/DateQuery.ts';
 import { stringOrArray } from '../../utils/schemas/StringOrArray.ts';
 
 export const TokenKlineBsPointParamsSchema = z.object({
-  blockchain: z.string(),
+  chainId: z.string().optional(),
+  blockchain: z.string().optional(),
   address: z.string(),
   bar: z.string().transform((val) => normalizePeriod(val ?? '5m', '5m')),
   fromDate: DateQuery.transform((val) => val ?? undefined),
@@ -15,7 +17,7 @@ export const TokenKlineBsPointParamsSchema = z.object({
     .transform((val) => val?.map((label) => String(label).trim()).filter((label) => label.length > 0) ?? []),
 });
 
-export type TokenKlineBsPointParams = z.input<typeof TokenKlineBsPointParamsSchema>;
+export type TokenKlineBsPointParams = SDKInput<typeof TokenKlineBsPointParamsSchema, 'blockchain'>;
 export type TokenKlineBsPointInferType = z.infer<typeof TokenKlineBsPointParamsSchema>;
 
 export const TokenKlineBsBubblePoint = z.object({

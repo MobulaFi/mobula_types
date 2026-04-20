@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SwapType, Tags } from '../../utils/constants/constants.ts';
-import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import DateQuery from '../../utils/schemas/DateQuery.ts';
 import { PlatformMetadataOutput } from '../../utils/schemas/PlatformMetadataOutput.ts';
 import { stringOrArray } from '../../utils/schemas/StringOrArray.ts';
@@ -10,7 +10,14 @@ import { WalletMetadataOutput } from '../../utils/schemas/WalletMetadataOutput.t
 
 export const TradeDirection = z.enum(['buy', 'sell']);
 
+/** All possible values for the `type` field in trade responses */
+export const TokenTradeType = z.enum(['buy', 'sell', 'deposit', 'withdrawal']);
+
+/** All possible values for the `operation` field in trade responses (lowercase of SwapType) */
+export const TradeOperation = z.enum(['regular', 'mev', 'mev_sandwiched', 'deposit', 'withdrawal', 'bond']);
+
 export const TokenTradesParamsSchema = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   address: z.string().optional(),
   offset: z.coerce.number().default(0),
@@ -41,14 +48,15 @@ export const TokenTradesParamsSchema = z.object({
   toDate: DateQuery.transform((val) => val ?? undefined),
 });
 
-export type TokenTradesParams = z.input<typeof TokenTradesParamsSchema>;
+export type TokenTradesParams = SDKInput<typeof TokenTradesParamsSchema, 'blockchain'>;
 export type TokenTradesInferType = z.infer<typeof TokenTradesParamsSchema>;
 
 export const TokenTradesParamsSchemaOpenAPI = createOpenAPIParams(TokenTradesParamsSchema, {
-  omit: ['useSwapRecipient', 'mode'],
+  omit: ['useSwapRecipient', 'blockchain'],
   describe: {
-    blockchain: 'Blockchain name or chain ID',
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
     address: 'Token or pool contract address',
+    mode: 'Query mode: "pair" (pool address), "asset" (token address). Auto-detects if omitted.',
     offset: 'Offset for pagination (default: 0)',
     limit: 'Number of trades per page (default: 10)',
     sortOrder: 'Sort order: asc or desc (default: desc)',
@@ -65,8 +73,8 @@ export const TokenTradesParamsSchemaOpenAPI = createOpenAPIParams(TokenTradesPar
 
 export const TokenTradeOutput = z.object({
   id: z.string(),
-  operation: z.string(),
-  type: z.string(),
+  operation: TradeOperation,
+  type: TokenTradeType,
   baseTokenAmount: z.number(),
   baseTokenAmountRaw: z.string(),
   baseTokenAmountUSD: z.number(),
@@ -125,8 +133,8 @@ export type TokenTradesResponse = z.infer<typeof TokenTradeResponseSchema>;
 // Single trade output - uses full TokenDetailsOutput for baseToken/quoteToken (prod alignment)
 export const SingleTokenTradeOutput = z.object({
   id: z.string(),
-  operation: z.string(),
-  type: z.string(),
+  operation: TradeOperation,
+  type: TokenTradeType,
   baseTokenAmount: z.number(),
   baseTokenAmountRaw: z.string(),
   baseTokenAmountUSD: z.number(),
@@ -179,8 +187,8 @@ export const FormattedTokenTradeOutput = z.object({
   tokenAmountVs: z.number(),
   tokenAmountUsd: z.number(),
   tokenAmountVsUsd: z.number(),
-  type: z.string(),
-  operation: z.string(),
+  type: TokenTradeType,
+  operation: TradeOperation,
   blockchain: z.string(),
   hash: z.string(),
   sender: z.string(),
@@ -215,22 +223,23 @@ export const FormattedTokenTradeResponseSchema = z.object({
 export type FormattedTokenTradesResponse = z.infer<typeof FormattedTokenTradeResponseSchema>;
 
 export const TokenTradeParamsSchema = z.object({
+  chainId: z.string().optional(),
   blockchain: z.string().optional(),
   transactionHash: z.string().min(1, 'Transaction hash is required'),
 });
 
-export type TokenTradeParams = z.input<typeof TokenTradeParamsSchema>;
+export type TokenTradeParams = SDKInput<typeof TokenTradeParamsSchema, 'blockchain'>;
 export type TokenTradeInferType = z.infer<typeof TokenTradeParamsSchema>;
 
 export const TokenTradeParamsSchemaOpenAPI = z.object({
-  blockchain: z.string().describe('Blockchain name or chain ID'),
+  chainId: z.string().optional().describe('Blockchain chain ID (e.g., "evm:56", "solana:solana")'),
   transactionHash: z.string().min(1).describe('Transaction hash'),
 });
 
 export const TokenTradeOutputOpenAPI = z.object({
   id: z.string(),
-  operation: z.string(),
-  type: z.string(),
+  operation: TradeOperation.describe('Trade operation type (regular, mev, mev_sandwiched, deposit, withdrawal, bond)'),
+  type: TokenTradeType.describe('Trade type (buy, sell, deposit, withdrawal)'),
   baseTokenAmount: z.number(),
   baseTokenAmountRaw: z.string(),
   baseTokenAmountUSD: z.number(),

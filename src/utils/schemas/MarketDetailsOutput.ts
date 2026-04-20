@@ -109,6 +109,10 @@ export const MarketDetailsOutput = z
     totalFeesPaidUSD: z.coerce.number().nullable(),
     totalFeesPaidNativeRaw: z.coerce.string().default('0'),
 
+    // Share of LP tokens (V2) / position liquidity (V3/V4) held by dead/locker addresses
+    // for this pool. Null when no cached analysis is available (token/security hydrates it).
+    liquidityBurnPercentage: z.number().nullable().optional(),
+
     priceChange1minPercentage: z.coerce.number().default(0),
     priceChange5minPercentage: z.coerce.number().default(0),
     priceChange1hPercentage: z.coerce.number().default(0),

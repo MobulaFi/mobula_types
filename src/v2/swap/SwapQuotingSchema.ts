@@ -19,7 +19,8 @@ import { z } from 'zod';
  */
 export const SwapQuotingQuerySchema = z
   .object({
-    chainId: z.string(),
+    chainId: z.string().optional(),
+    blockchain: z.string().optional(),
     tokenIn: z.string().min(1, 'tokenIn is required'),
     tokenOut: z.string().min(1, 'tokenOut is required'),
     /**
@@ -265,6 +266,15 @@ export const SwapQuotingQuerySchema = z
   })
   .refine(
     (data) => {
+      return data.chainId || data.blockchain;
+    },
+    {
+      message: 'chainId is required',
+      path: ['chainId'],
+    },
+  )
+  .refine(
+    (data) => {
       const hasAmount = data.amount !== undefined;
       const hasAmountRaw = data.amountRaw !== undefined;
       return hasAmount !== hasAmountRaw; // XOR: exactly one must be provided
@@ -276,4 +286,19 @@ export const SwapQuotingQuerySchema = z
   );
 
 /** Inferred type from SwapQuotingQuerySchema - includes payerAddress for fee abstraction */
-export type SwapQuotingQueryParams = z.infer<typeof SwapQuotingQuerySchema>;
+export type SwapQuotingQueryParams = Omit<z.infer<typeof SwapQuotingQuerySchema>, 'blockchain'>;
+
+import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
+
+export const SwapQuotingQuerySchemaOpenAPI = createOpenAPIParams(SwapQuotingQuerySchema, {
+  omit: ['blockchain'],
+  describe: {
+    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
+    tokenIn: 'Input token address',
+    tokenOut: 'Output token address',
+    amount: 'Human-readable amount (e.g., "1.5")',
+    amountRaw: 'Raw amount as string (e.g., "1500000")',
+    slippage: 'Slippage tolerance percentage (0-100, default: 1)',
+    walletAddress: 'Wallet address for the swap',
+  },
+});

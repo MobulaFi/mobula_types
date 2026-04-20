@@ -29,6 +29,18 @@ export type WalletActivityV2ControllerUnsafeParams = {
 export const WalletActivityV2ParamsSchema = z
   .object({
     wallet: z.string(),
+    chainIds: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (val) {
+          return val
+            .split(',')
+            .map((b) => b.trim())
+            .filter((b) => b.length > 0);
+        }
+        return [];
+      }),
     blockchains: z
       .string()
       .optional()
@@ -107,6 +119,7 @@ export type WalletActivityV2Params = z.input<typeof WalletActivityV2ParamsSchema
 export const WalletActivityV2ParamsSchemaOpenAPI = createOpenAPIParams(WalletActivityV2ParamsSchema, {
   omit: [
     'blacklist',
+    'blockchains',
     'pagination',
     'backfillTransfers',
     'backfillBalances',
@@ -117,7 +130,7 @@ export const WalletActivityV2ParamsSchemaOpenAPI = createOpenAPIParams(WalletAct
   ],
   describe: {
     wallet: 'Wallet address',
-    blockchains: 'Comma-separated list of blockchain IDs (e.g., "ethereum,base,solana:solana")',
+    chainIds: 'Comma-separated list of chain IDs (e.g., "evm:1,evm:8453,solana:solana")',
     offset: 'Offset for pagination (default: 0)',
     limit: 'Number of transactions per page (default: 100)',
     order: 'Sort order: asc or desc (default: desc)',

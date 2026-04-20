@@ -15,7 +15,20 @@ export type PlatformMetadata = z.infer<typeof PlatformMetadataSchema>;
 export const WalletAnalysisParamsSchema = z
   .object({
     wallet: z.string().min(1, 'Wallet address is required'),
+    chainId: z.string().optional(),
     blockchain: z.string().optional(),
+    chainIds: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (val) {
+          return val
+            .split(',')
+            .map((b) => b.trim())
+            .filter((b) => b.length > 0);
+        }
+        return [];
+      }),
     blockchains: z
       .string()
       .optional()
@@ -60,7 +73,7 @@ export const WalletAnalysisParamsSchema = z
   );
 
 /** Fields accepted at runtime but hidden from SDK types and OpenAPI spec */
-const WALLET_ANALYSIS_HIDDEN = ['blockchain'] as const;
+const WALLET_ANALYSIS_HIDDEN = ['blockchain', 'blockchains'] as const;
 type WalletAnalysisHiddenFields = (typeof WALLET_ANALYSIS_HIDDEN)[number];
 
 export type WalletAnalysisParams = SDKInput<typeof WalletAnalysisParamsSchema, WalletAnalysisHiddenFields>;
@@ -69,8 +82,7 @@ export const WalletAnalysisParamsSchemaOpenAPI = createOpenAPIParams(WalletAnaly
   omit: [...WALLET_ANALYSIS_HIDDEN],
   describe: {
     wallet: 'Wallet address to analyze',
-    blockchains:
-      'Comma-separated list of blockchain IDs (e.g., "ethereum,base,solana:solana"). If omitted, all chains.',
+    chainIds: 'Comma-separated list of chain IDs (e.g., "evm:1,evm:8453,solana:solana"). If omitted, all chains.',
     period: 'Analysis period: 1d, 7d, 30d, or 90d (default: 7d)',
     from: 'Start timestamp in milliseconds (alternative to period)',
     to: 'End timestamp in milliseconds (alternative to period)',

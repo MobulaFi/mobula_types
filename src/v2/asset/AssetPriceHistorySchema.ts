@@ -1,10 +1,12 @@
 import { z } from 'zod';
+import { createOpenAPIParams, type SDKInput } from '../../utils/functions/openAPIHelpers.ts';
 import normalizePeriod from '../../utils/functions/period.ts';
 
 // Single asset query schema
 const AssetPriceHistoryItemSchema = z.object({
   address: z.string().optional(),
   chainId: z.string().optional(),
+  blockchain: z.string().optional(),
   id: z.coerce.number().optional(),
   period: z
     .string()
@@ -29,7 +31,7 @@ export const AssetPriceHistoryParamsSchema = AssetPriceHistoryItemSchema.refine(
   },
 ).refine(
   (data) => {
-    if (data.address !== undefined && data.chainId === undefined) {
+    if (data.address !== undefined && data.chainId === undefined && data.blockchain === undefined) {
       return false;
     }
     return true;
@@ -39,7 +41,19 @@ export const AssetPriceHistoryParamsSchema = AssetPriceHistoryItemSchema.refine(
   },
 );
 
-export type AssetPriceHistoryParams = z.input<typeof AssetPriceHistoryParamsSchema>;
+export type AssetPriceHistoryParams = SDKInput<typeof AssetPriceHistoryParamsSchema, 'blockchain'>;
+
+export const AssetPriceHistoryParamsSchemaOpenAPI = createOpenAPIParams(AssetPriceHistoryItemSchema, {
+  omit: ['blockchain'],
+  describe: {
+    address: 'Token contract address',
+    chainId: 'Blockchain chain ID (required when using address)',
+    id: 'Asset ID (alternative to address+chainId)',
+    period: 'Candle period (e.g., "5m", "1h", "1d")',
+    from: 'Start timestamp (unix seconds)',
+    to: 'End timestamp (unix seconds)',
+  },
+});
 
 // Array schema for batch items
 const AssetPriceHistoryArraySchema = z
@@ -57,7 +71,7 @@ const AssetPriceHistoryArraySchema = z
   .refine(
     (assets) => {
       return assets.every((asset) => {
-        if (asset.address !== undefined && asset.chainId === undefined) {
+        if (asset.address !== undefined && asset.chainId === undefined && asset.blockchain === undefined) {
           return false;
         }
         return true;
