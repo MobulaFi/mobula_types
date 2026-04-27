@@ -166,6 +166,114 @@ export const SearchParamsSchema = z.object({
 export type SearchParams = z.input<typeof SearchParamsSchema>;
 export type SearchInferType = z.infer<typeof SearchParamsSchema>;
 
+/**
+ * POST body schema for `/api/2/fast-search`.
+ *
+ * Structure mirrors a single pulse V2 `view` payload: top-level `chainId`,
+ * `sortBy`, `sortOrder`, `limit`, `offset` — with `filters` as a separate
+ * free-form Prisma-like tree (`AND`/`OR`/`NOT` + leaf operators). A payload
+ * that validates here is a valid sub-payload of a pulse view.
+ *
+ * Example:
+ *   {
+ *     "input": "eth",
+ *     "chainId": ["evm:1", "evm:56", "solana:solana"],
+ *     "sortBy": "volume24h",
+ *     "limit": 10,
+ *     "filters": {
+ *       "AND": [
+ *         { "volume_24h": { "gte": 10000 } },
+ *         { "NOT": { "shadow_ban": true } }
+ *       ]
+ *     }
+ *   }
+ */
+export const FastSearchPostBodySchema = z.object({
+  input: z.string(),
+  /**
+   * Top-level chain scope — mirrors pulse `view.chainId`. Accepts a single
+   * chainId or an array. Passed to Prisma as `chainId: { in: [...] }`.
+   */
+  chainId: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val): string[] | undefined => {
+      if (!val) return undefined;
+      const arr = Array.isArray(val) ? val : [val];
+      return arr.filter((v) => typeof v === 'string' && v.length > 0);
+    }),
+  /**
+   * Top-level pool-type scope — mirrors pulse `view.poolTypes`. Accepts a single
+   * poolType or an array. Passed to Prisma as `source: { in: [...] }`.
+   */
+  poolTypes: z
+    .union([z.string(), z.array(z.string())])
+    .optional()
+    .transform((val): string[] | undefined => {
+      if (!val) return undefined;
+      const arr = Array.isArray(val) ? val : [val];
+      return arr.filter((v) => typeof v === 'string' && v.length > 0);
+    }),
+  /** Free-form Prisma-like `where` tree — same surface as pulse `view.filters`. */
+  filters: z.record(z.unknown()).optional().default({}),
+  sortBy: z
+    .enum([
+      // camelCase (preferred)
+      'volume24h',
+      'marketCap',
+      'createdAt',
+      'volume1h',
+      'feesPaid5min',
+      'feesPaid1h',
+      'feesPaid24h',
+      'volume5min',
+      'holdersCount',
+      'organicVolume1h',
+      'totalFeesPaidUsd',
+      'searchScore',
+      'trendingScore24h',
+      // snake_case (legacy)
+      'volume_24h',
+      'market_cap',
+      'created_at',
+      'volume_1h',
+      'fees_paid_5min',
+      'fees_paid_1h',
+      'fees_paid_24h',
+      'volume_5min',
+      'holders_count',
+      'organic_volume_1h',
+      'total_fees_paid_usd',
+      'search_score',
+      'trending_score_24h',
+    ])
+    .optional()
+    .default('volume_24h')
+    .transform((val): SearchSortByInternal => {
+      const mapping: Record<string, SearchSortByInternal> = {
+        volume24h: 'volume_24h',
+        marketCap: 'market_cap',
+        createdAt: 'created_at',
+        volume1h: 'volume_1h',
+        feesPaid5min: 'fees_paid_5min',
+        feesPaid1h: 'fees_paid_1h',
+        feesPaid24h: 'fees_paid_24h',
+        volume5min: 'volume_5min',
+        holdersCount: 'holders_count',
+        organicVolume1h: 'organic_volume_1h',
+        totalFeesPaidUsd: 'total_fees_paid_usd',
+        searchScore: 'search_score',
+        trendingScore24h: 'trending_score_24h',
+      };
+      return mapping[val] ?? (val as SearchSortByInternal);
+    }),
+  sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
+  limit: z.number().min(1).max(20).optional().default(5),
+  offset: z.number().min(0).optional().default(0),
+});
+
+export type FastSearchPostBody = z.infer<typeof FastSearchPostBodySchema>;
+
 // OpenAPI variant: only expose camelCase sortBy values, hide 'og' mode
 export const SearchParamsSchemaOpenAPI = z.object({
   input: z.string().describe('Search query string'),

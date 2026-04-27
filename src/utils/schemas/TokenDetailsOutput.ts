@@ -296,6 +296,7 @@ export const TokenDetailsOutput = z
     dexscreenerHeader: z.string().nullable().default(null),
     dexscreenerAdPaid: z.boolean().nullable().default(false),
     dexscreenerAdPaidDate: z.coerce.date().nullable().default(null),
+    dexscreenerPendingAt: z.coerce.date().nullable().default(null),
     dexscreenerSocialPaid: z.boolean().nullable().default(false),
     dexscreenerSocialPaidDate: z.coerce.date().nullable().default(null),
 

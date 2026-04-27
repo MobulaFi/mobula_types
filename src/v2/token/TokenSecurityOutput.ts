@@ -27,6 +27,7 @@ export const TokenSecurityOutput = z.object({
   totalBurnedBalanceRaw: z.string().nullable(),
   buyFeePercentage: z.number(),
   sellFeePercentage: z.number(),
+  transferFeePercentage: z.number(),
   maxWalletAmountRaw: z.string().nullable(),
   maxSellAmountRaw: z.string().nullable(),
   maxBuyAmountRaw: z.string().nullable(),

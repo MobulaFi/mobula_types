@@ -61,6 +61,8 @@ export * from './v1/webhook/WebhookSchema.ts';
 export * from './v2/asset/AssetDetailsSchema.ts';
 export * from './v2/asset/AssetPriceHistorySchema.ts';
 //bridge (alpha preview)
+export * from './v2/bridge/BridgeExplorerSchema.ts';
+export * from './v2/bridge/BridgeHistorySchema.ts';
 export * from './v2/bridge/BridgeQuoteSchema.ts';
 export * from './v2/bridge/BridgeRoutesSchema.ts';
 export * from './v2/bridge/BridgeStatusSchema.ts';
@@ -80,6 +82,7 @@ export * from './v2/swap/SwapSendOutput.ts';
 export * from './v2/swap/SwapSendSchema.ts';
 export * from './v2/token/TokenAthSchema.ts';
 export * from './v2/token/TokenDetailsSchema.ts';
+export * from './v2/token/TokenDevHistorySchema.ts';
 export * from './v2/token/TokenKlineBsPointSchema.ts';
 export * from './v2/token/TokenMarketsSchema.ts';
 export * from './v2/token/TokenOHLCVHistorySchema.ts';
@@ -102,6 +105,7 @@ export * from './v2/wallet/WalletDeployerSchema.ts';
 export * from './v2/wallet/WalletFundingQuerySchema.ts';
 //perp
 export * from './v2/wallet/WalletPerpsPositionsSchema.ts';
+export * from './v2/wallet/WalletPositionHistorySchema.ts';
 export * from './v2/wallet/WalletPositionsSchema.ts';
 export * from './v2/wallet/WalletTokenBalancesSchema.ts';
 export * from './v2/wallet/WalletTradesSchema.ts';

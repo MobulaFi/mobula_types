@@ -264,6 +264,7 @@ const WalletPositionsBatchItemSchema = z.object({
   useSwapRecipient: z.boolean().optional().default(true),
   includeAllBalances: z.boolean().optional().default(false),
   _backfillPositions: z.boolean().optional().default(false),
+  _backfillSwapsAndPositions: z.boolean().optional().default(false),
 });
 
 // Batch positions params - supports array or object with items (max 10 wallets)
