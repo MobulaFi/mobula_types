@@ -12,6 +12,7 @@ export const PulsePayloadParamsSchema = z.object({
   subscriptionId: z.string().optional(),
   compressed: z.coerce.boolean().optional().default(false),
   assetMode: z.coerce.boolean().optional().default(false),
+  excludeLPTokens: z.coerce.boolean().optional().default(true),
   chainId: z.union([z.string(), z.array(z.string())]).optional(),
   poolTypes: z.union([z.string(), z.array(z.string())]).optional(),
   excludeDuplicates: z.coerce.boolean().optional().default(true),
@@ -131,6 +132,7 @@ export const PulsePayloadParamsSchema = z.object({
           ])
           .optional(),
         assetListed: z.coerce.boolean().optional(),
+        excludeLPTokens: z.coerce.boolean().optional(),
         pagination: z.coerce.boolean().optional(),
       }),
     )

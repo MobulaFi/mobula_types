@@ -6,22 +6,45 @@ const booleanPreprocess = z.preprocess((val) => {
   return val;
 }, z.boolean().optional());
 
-export const SystemMetadataV2ParamsSchema = z.object({
-  // Selection
-  factories: booleanPreprocess,
-  poolTypes: booleanPreprocess,
-  chains: booleanPreprocess,
+// Map lowercase aliases to canonical camelCase keys so URL params remain
+// tolerant to common casing variants (e.g. `chainid` → `chainId`).
+const CAMEL_ALIASES: Record<string, string> = {
+  pooltypes: 'poolTypes',
+  hasmetadata: 'hasMetadata',
+  chainid: 'chainId',
+};
 
-  // Factory filters
-  hasMetadata: booleanPreprocess,
-  status: z.enum(['APPROVED', 'WAITING_APPROVAL', 'NOT_APPROVED']).optional(),
-  chainId: z.string().optional(),
-  name: z.string().optional(),
+export const SystemMetadataV2ParamsSchema = z.preprocess(
+  (val) => {
+    if (val && typeof val === 'object' && !Array.isArray(val)) {
+      const src = val as Record<string, unknown>;
+      const out: Record<string, unknown> = { ...src };
+      for (const [alias, canonical] of Object.entries(CAMEL_ALIASES)) {
+        if (out[alias] !== undefined && out[canonical] === undefined) {
+          out[canonical] = out[alias];
+        }
+      }
+      return out;
+    }
+    return val;
+  },
+  z.object({
+    // Selection
+    factories: booleanPreprocess,
+    poolTypes: booleanPreprocess,
+    chains: booleanPreprocess,
 
-  // Chain filters
-  indexed: booleanPreprocess,
-  type: z.string().optional(),
-});
+    // Factory filters
+    hasMetadata: booleanPreprocess,
+    status: z.enum(['APPROVED', 'WAITING_APPROVAL', 'NOT_APPROVED']).optional(),
+    chainId: z.string().optional(),
+    name: z.string().optional(),
+
+    // Chain filters
+    indexed: booleanPreprocess,
+    type: z.string().optional(),
+  }),
+);
 
 export type SystemMetadataV2Params = z.input<typeof SystemMetadataV2ParamsSchema>;
 

@@ -18,7 +18,8 @@ export type SearchSortByInternal =
   | 'organic_volume_1h'
   | 'total_fees_paid_usd'
   | 'search_score'
-  | 'trending_score_24h';
+  | 'trending_score_24h'
+  | 'liquidity';
 
 export const SearchParamsSchema = z.object({
   input: z.string(),
@@ -123,6 +124,7 @@ export const SearchParamsSchema = z.object({
       'totalFeesPaidUsd',
       'searchScore',
       'trendingScore24h',
+      'liquidity',
       // snake_case (legacy, for backwards compatibility)
       'volume_24h',
       'market_cap',
@@ -232,6 +234,7 @@ export const FastSearchPostBodySchema = z.object({
       'totalFeesPaidUsd',
       'searchScore',
       'trendingScore24h',
+      'liquidity',
       // snake_case (legacy)
       'volume_24h',
       'market_cap',
@@ -297,6 +300,7 @@ export const SearchParamsSchemaOpenAPI = z.object({
       'totalFeesPaidUsd',
       'searchScore',
       'trendingScore24h',
+      'liquidity',
     ])
     .optional()
     .describe('Sort field for search results'),
