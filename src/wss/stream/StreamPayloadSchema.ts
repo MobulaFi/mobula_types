@@ -14,6 +14,12 @@ export const StreamPayloadSchema = z.object({
     .transform((val) => (typeof val === 'string' ? val === 'true' : val)),
   debugSubscriptionId: z.string().optional(),
   tag: z.string().max(50).optional(),
+  // Opt in to gzip compression of every outbound frame (sent as binary,
+  // `level: 3` for fast/small balance). Mirrors the Pulse API flag — clients
+  // already shipped with `pako` decoding flip this on for ~5-10x byte
+  // reduction on swap-enriched payloads, which directly reduces the Node ws
+  // bufferedAmount + kernel TCP buffer pressure that drives our storm cycle.
+  compressed: z.boolean().optional(),
 });
 
 export type StreamPayloadType = z.infer<typeof StreamPayloadSchema>;

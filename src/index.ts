@@ -80,6 +80,7 @@ export * from './v2/swap/SwapQuotingOutput.ts';
 export * from './v2/swap/SwapQuotingSchema.ts';
 export * from './v2/swap/SwapSendOutput.ts';
 export * from './v2/swap/SwapSendSchema.ts';
+export * from './v2/token/SecurityScoreSchema.ts';
 export * from './v2/token/TokenAthSchema.ts';
 export * from './v2/token/TokenDetailsSchema.ts';
 export * from './v2/token/TokenDevHistorySchema.ts';

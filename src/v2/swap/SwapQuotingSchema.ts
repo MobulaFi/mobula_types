@@ -293,12 +293,34 @@ import { createOpenAPIParams } from '../../utils/functions/openAPIHelpers.ts';
 export const SwapQuotingQuerySchemaOpenAPI = createOpenAPIParams(SwapQuotingQuerySchema, {
   omit: ['blockchain'],
   describe: {
-    chainId: 'Blockchain chain ID (e.g., "evm:56", "solana:solana")',
-    tokenIn: 'Input token address',
-    tokenOut: 'Output token address',
-    amount: 'Human-readable amount (e.g., "1.5")',
-    amountRaw: 'Raw amount as string (e.g., "1500000")',
-    slippage: 'Slippage tolerance percentage (0-100, default: 1)',
-    walletAddress: 'Wallet address for the swap',
+    chainId:
+      'Mobula chain id. EVM: `evm:<integer>` (e.g. `evm:1`, `evm:8453`, `evm:42161`). Solana: `solana:solana`. TON: `ton:mainnet` or `ton:testnet`.',
+    tokenIn:
+      'Sell token address. Native sentinels — EVM: `0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE` (EIP-7528). Solana: `So11111111111111111111111111111111111111112` (wSOL). TON: `EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c`.',
+    tokenOut: 'Buy token address. Same sentinel rules as `tokenIn`.',
+    amount:
+      'Human-readable amount (e.g. `"1.5"` for 1.5 tokens). Converted server-side: raw = amount × 10^decimals. Mutually exclusive with `amountRaw`.',
+    amountRaw:
+      'Raw amount as a digit-only string (e.g. `"1500000"` for 1.5 USDC at 6 decimals). Use this when you already have the bigint to avoid float precision loss. Mutually exclusive with `amount`.',
+    slippage: 'Slippage tolerance in % (0-100, default 1). Quote rejects if expected output drops below this threshold.',
+    walletAddress: 'User wallet address — recipient of `tokenOut`, signer for the broadcast tx, fee context.',
+    excludedProtocols: 'DEX-level deny list (CSV). Example: `pump-amm,raydium`.',
+    onlyProtocols: 'DEX-level allow list (CSV). Example: `uniswap-v3,uniswap-v4`.',
+    poolAddress: 'Pin routing to a single pool (e.g. when you want a specific Uniswap V3 fee tier).',
+    onlyRouters:
+      'Aggregator filter (CSV) — `jupiter`, `kyberswap`, `lifi`, `naos`. Omit to let the API pick.',
+    priorityFee:
+      'Solana only. `auto`, `low`, `medium`, `high`, `veryHigh`, or microLamports per CU as a number string.',
+    computeUnitLimit: 'Solana only. `true` for dynamic CU limit, or a fixed integer (default 400 000).',
+    jitoTipLamports:
+      'Solana only. Jito tip in lamports — adds a transfer to one of the Jito tip accounts for fast landing.',
+    feePercentage:
+      'Caller referral fee in % (0-99). Mobula skims a 20% platform cut off the top. Requires `feeWallet`.',
+    feeWallet: 'Wallet that receives the caller referral fee. Required when `feePercentage > 0`.',
+    payerAddress:
+      'Solana only. Fee abstraction — wallet that signs/pays for the tx (separate from `walletAddress`).',
+    multiLander:
+      'Solana only. `true` returns N candidate transactions over a durable nonce — race them across landers (Jito, Nozomi, 0slot). Only one commits.',
+    landerTipLamports: 'Per-lander tip when `multiLander=true`. Defaults to each lander\'s minimum.',
   },
 });

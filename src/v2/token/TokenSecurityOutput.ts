@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SecurityScoreDetailsSchema } from './SecurityScoreSchema.ts';
 
 /**
  * Static analysis status enum:
@@ -60,6 +61,14 @@ export const TokenSecurityOutput = z.object({
   staticAnalysisDate: z.string().nullable(),
   // Liquidity burn: percentage of LP tokens sent to dead/zero addresses
   liquidityBurnPercentage: z.number().nullable(),
+  // Aggregate security score (0-100, higher = safer) computed by token-handler.
+  // Null when token-handler hasn't scored this token yet (insufficient data).
+  securityScore: z.number().nullable(),
+  securityScoreUpdatedAt: z.string().nullable(),
+  // Full per-rule breakdown. Every rule's contribution, inputs, caps, and final
+  // tier are present so the score is fully auditable without re-querying sources.
+  // Null when no score has been computed yet.
+  securityScoreDetails: SecurityScoreDetailsSchema.nullable(),
   // LP holder analysis: top pools sorted by volume, each with holder breakdown
   liquidityAnalysis: z
     .array(
