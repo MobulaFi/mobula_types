@@ -66,6 +66,7 @@ export * from './v2/bridge/BridgeHistorySchema.ts';
 export * from './v2/bridge/BridgeQuoteSchema.ts';
 export * from './v2/bridge/BridgeRoutesSchema.ts';
 export * from './v2/bridge/BridgeStatusSchema.ts';
+export * from './v2/bridge/BridgeSummarySchema.ts';
 //explorer
 export * from './v2/explorer/BlockQuerySchema.ts';
 export * from './v2/market/MarketDetailsSchema.ts';
@@ -73,6 +74,8 @@ export * from './v2/market/MarketOHLCVHistorySchema.ts';
 export * from './v2/metadata/SystemMetadataV2Schema.ts';
 export * from './v2/perp/PerpBlocksSchema.ts';
 export * from './v2/perp/PerpOrderQuotingSchema.ts';
+export * from './v2/swap/SwapExecutionsOutput.ts';
+export * from './v2/swap/SwapExecutionsSchema.ts';
 export * from './v2/swap/SwapQuotingBatchOutput.ts';
 export * from './v2/swap/SwapQuotingBatchSchema.ts';
 export * from './v2/swap/SwapQuotingInstructionsOutput.ts';

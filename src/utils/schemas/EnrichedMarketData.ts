@@ -63,6 +63,7 @@ export const TOKEN_METADATA_KEYS = [
   'is_mayhem_mode',
   'is_cashback_coin',
   'is_agent_mode',
+  'is_og_coin',
 ] as const;
 
 export type TokenMetadataKey = (typeof TOKEN_METADATA_KEYS)[number];
@@ -114,6 +115,9 @@ export const TokenData = z
     is_mayhem_mode: z.boolean().nullable().optional().default(null),
     is_cashback_coin: z.boolean().nullable().optional().default(null),
     is_agent_mode: z.boolean().nullable().optional().default(null),
+    // OG-coin flag: true when no other token shares the same (chainId, name).
+    // See `is_og_coin` documentation in market-details / token-details.
+    is_og_coin: z.boolean().nullable().optional().default(null),
 
     deployer: z.string().nullable().optional(),
     createdAt: z.string().optional(),

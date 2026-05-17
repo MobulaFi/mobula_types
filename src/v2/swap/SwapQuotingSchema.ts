@@ -223,6 +223,22 @@ export const SwapQuotingQuerySchema = z
      */
     feeWallet: z.string().optional(),
     /**
+     * Minimum referral fee in the chain's native token, in human-readable units.
+     * Applies a floor to the caller referral fee: max(amountIn * feePercentage / 100, minFeesNative).
+     * Currently honored on TON native-input swaps; ignored elsewhere.
+     */
+    minFeesNative: z
+      .union([z.string(), z.number()])
+      .optional()
+      .transform((val) => {
+        if (val === undefined || val === null || val === '') return undefined;
+        const numValue = typeof val === 'number' ? val : Number.parseFloat(val);
+        if (Number.isNaN(numValue) || numValue < 0) {
+          throw new Error('minFeesNative must be a non-negative number');
+        }
+        return numValue;
+      }),
+    /**
      * Payer wallet address for Solana transactions (fee abstraction).
      * This wallet will be the fee payer and signer of the transaction.
      * The swap itself uses `walletAddress` for token transfers.
@@ -302,13 +318,13 @@ export const SwapQuotingQuerySchemaOpenAPI = createOpenAPIParams(SwapQuotingQuer
       'Human-readable amount (e.g. `"1.5"` for 1.5 tokens). Converted server-side: raw = amount × 10^decimals. Mutually exclusive with `amountRaw`.',
     amountRaw:
       'Raw amount as a digit-only string (e.g. `"1500000"` for 1.5 USDC at 6 decimals). Use this when you already have the bigint to avoid float precision loss. Mutually exclusive with `amount`.',
-    slippage: 'Slippage tolerance in % (0-100, default 1). Quote rejects if expected output drops below this threshold.',
+    slippage:
+      'Slippage tolerance in % (0-100, default 1). Quote rejects if expected output drops below this threshold.',
     walletAddress: 'User wallet address — recipient of `tokenOut`, signer for the broadcast tx, fee context.',
     excludedProtocols: 'DEX-level deny list (CSV). Example: `pump-amm,raydium`.',
     onlyProtocols: 'DEX-level allow list (CSV). Example: `uniswap-v3,uniswap-v4`.',
     poolAddress: 'Pin routing to a single pool (e.g. when you want a specific Uniswap V3 fee tier).',
-    onlyRouters:
-      'Aggregator filter (CSV) — `jupiter`, `kyberswap`, `lifi`, `naos`. Omit to let the API pick.',
+    onlyRouters: 'Aggregator filter (CSV) — `jupiter`, `kyberswap`, `lifi`, `naos`. Omit to let the API pick.',
     priorityFee:
       'Solana only. `auto`, `low`, `medium`, `high`, `veryHigh`, or microLamports per CU as a number string.',
     computeUnitLimit: 'Solana only. `true` for dynamic CU limit, or a fixed integer (default 400 000).',
@@ -317,10 +333,11 @@ export const SwapQuotingQuerySchemaOpenAPI = createOpenAPIParams(SwapQuotingQuer
     feePercentage:
       'Caller referral fee in % (0-99). Mobula skims a 20% platform cut off the top. Requires `feeWallet`.',
     feeWallet: 'Wallet that receives the caller referral fee. Required when `feePercentage > 0`.',
-    payerAddress:
-      'Solana only. Fee abstraction — wallet that signs/pays for the tx (separate from `walletAddress`).',
+    minFeesNative:
+      'Minimum caller referral fee in native-token units. Currently honored on TON native-input swaps; requires `feeWallet`.',
+    payerAddress: 'Solana only. Fee abstraction — wallet that signs/pays for the tx (separate from `walletAddress`).',
     multiLander:
       'Solana only. `true` returns N candidate transactions over a durable nonce — race them across landers (Jito, Nozomi, 0slot). Only one commits.',
-    landerTipLamports: 'Per-lander tip when `multiLander=true`. Defaults to each lander\'s minimum.',
+    landerTipLamports: "Per-lander tip when `multiLander=true`. Defaults to each lander's minimum.",
   },
 });

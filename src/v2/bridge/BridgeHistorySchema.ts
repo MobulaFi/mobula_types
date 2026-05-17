@@ -24,14 +24,28 @@ export const BridgeHistoryStatusSchema = z.enum([
 
 export type BridgeHistoryStatus = z.infer<typeof BridgeHistoryStatusSchema>;
 
-export const BridgeHistoryParamsSchema = z.object({
-  wallet: z.string().min(1, 'wallet is required'),
-  limit: z.coerce.number().int().min(1).max(100).optional().default(50),
-  cursor: z.string().optional(),
-  status: BridgeHistoryStatusSchema.optional(),
-  originChainId: z.string().optional(),
-  destinationChainId: z.string().optional(),
-});
+export const BridgeHistoryParamsSchema = z
+  .object({
+    // wallet is no longer mandatory: the endpoint can be scoped by API-key
+    // ownership (customerId / apiKey) instead, optionally narrowed further by
+    // chain. At least one scoping dimension is still required so we never run
+    // an unbounded global scan. orgId is intentionally not supported here —
+    // history is per-wallet/customer/key only.
+    wallet: z.string().min(1).optional(),
+    customerId: z.string().min(1).optional(),
+    apiKey: z.string().min(1).optional(),
+    limit: z.coerce.number().int().min(1).max(100).optional().default(50),
+    cursor: z.string().optional(),
+    status: BridgeHistoryStatusSchema.optional(),
+    originChainId: z.string().optional(),
+    destinationChainId: z.string().optional(),
+  })
+  .refine((d) => [d.customerId, d.apiKey].filter((v) => v != null).length <= 1, {
+    message: 'customerId and apiKey are mutually exclusive — provide at most one',
+  })
+  .refine((d) => d.wallet != null || d.customerId != null || d.apiKey != null, {
+    message: 'at least one of wallet, customerId, or apiKey is required',
+  });
 
 export type BridgeHistoryParams = z.infer<typeof BridgeHistoryParamsSchema>;
 export type BridgeHistoryInferType = z.infer<typeof BridgeHistoryParamsSchema>;
@@ -44,9 +58,21 @@ export const BridgeHistoryItemSchema = z.object({
   sender: z.string(),
   recipient: z.string(),
   originToken: z.string(),
+  originMeta: z.object({
+    name: z.string().nullable(),
+    symbol: z.string().nullable(),
+    logo: z.string().nullable(),
+  }),
   destinationToken: z.string(),
+  destinationMeta: z.object({
+    name: z.string().nullable(),
+    symbol: z.string().nullable(),
+    logo: z.string().nullable(),
+  }),
   amountIn: z.string(),
   amountOut: z.string().nullable(),
+  amountInUsd: z.number().nullable(),
+  amountOutUsd: z.number().nullable(),
   depositTxHash: z.string().nullable(),
   fillTxHash: z.string().nullable(),
   settleTxHash: z.string().nullable(),
