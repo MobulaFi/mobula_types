@@ -75,14 +75,10 @@ export const SwapSendSchema = z
       example: 'solana:solana',
     }),
     signedTransaction: base64ToBuffer.optional(),
-    candidates: z
-      .array(SwapSendCandidateSchema)
-      .min(1)
-      .optional()
-      .openapi({
-        description:
-          'Multi-lander batch (Solana only). One signed candidate per lander, sharing a durable nonce — only one will commit. Mutually exclusive with `signedTransaction`.',
-      }),
+    candidates: z.array(SwapSendCandidateSchema).min(1).optional().openapi({
+      description:
+        'Multi-lander batch (Solana only). One signed candidate per lander, sharing a durable nonce — only one will commit. Mutually exclusive with `signedTransaction`.',
+    }),
     awaitLanding: z.boolean().optional().openapi({
       description: 'When `true`, the endpoint blocks until on-chain confirmation and returns swap data.',
       example: false,

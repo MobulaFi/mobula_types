@@ -54,6 +54,9 @@ export const SecurityScoreInputSnapshotSchema = z.object({
   address: z.string(),
 
   liquidityUSD: z.number(),
+  // Total pool liquidity (both sides) — what check 1 uses for LP/MC ratio.
+  // Optional for backward compatibility with rows persisted before this field landed.
+  liquidityMaxUSD: z.number().optional(),
   marketCapUSD: z.number(),
   volume24hUSD: z.number(),
   organicVolume24hUSD: z.number(),

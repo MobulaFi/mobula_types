@@ -15,18 +15,14 @@ extendZodWithOpenApi(z);
  */
 const SolanaTransactionSchema = z
   .object({
-    serialized: z
-      .string()
-      .openapi({
-        description: 'Base64-encoded serialized Solana transaction (typically a VersionedTransaction).',
-        example: 'AQABAuObQ8Adqk1eqZxRMJg4r6vGtXq9k0...base64...',
-      }),
-    variant: z
-      .enum(['legacy', 'versioned'])
-      .openapi({
-        description: 'Transaction variant — almost always `versioned` in production.',
-        example: 'versioned',
-      }),
+    serialized: z.string().openapi({
+      description: 'Base64-encoded serialized Solana transaction (typically a VersionedTransaction).',
+      example: 'AQABAuObQ8Adqk1eqZxRMJg4r6vGtXq9k0...base64...',
+    }),
+    variant: z.enum(['legacy', 'versioned']).openapi({
+      description: 'Transaction variant — almost always `versioned` in production.',
+      example: 'versioned',
+    }),
   })
   .openapi('SolanaTransaction');
 
@@ -151,14 +147,10 @@ const TonCalldataSchema = z
     transaction: TonInternalMessageSchema.openapi({
       description: 'Primary swap message (back-compat). Always equal to `transactions[0]`.',
     }),
-    transactions: z
-      .array(TonInternalMessageSchema)
-      .min(1)
-      .max(4)
-      .openapi({
-        description:
-          'Full message envelope. `[0]` = swap, `[1]` = Mobula 0.1% protocol fee, `[2]` = caller referral fee. v4r2 wallet contract supports up to 4 per signature. TonConnect wallets accept this verbatim as `messages: []`.',
-      }),
+    transactions: z.array(TonInternalMessageSchema).min(1).max(4).openapi({
+      description:
+        'Full message envelope. `[0]` = swap, `[1]` = Mobula 0.1% protocol fee, `[2]` = caller referral fee. v4r2 wallet contract supports up to 4 per signature. TonConnect wallets accept this verbatim as `messages: []`.',
+    }),
     fees: z
       .object({
         mobulaFeeAmount: z.string().openapi({
@@ -204,14 +196,10 @@ const TokenInfoSchema = z
     name: z.string().optional().openapi({ example: 'USD Coin' }),
     symbol: z.string().optional().openapi({ example: 'USDC' }),
     decimals: z.number().openapi({ example: 6 }),
-    logo: z
-      .string()
-      .nullable()
-      .optional()
-      .openapi({
-        description: 'Logo URL (null when unavailable).',
-        example: 'https://metadata.mobula.io/assets/logos/evm_8453_0x8335…',
-      }),
+    logo: z.string().nullable().optional().openapi({
+      description: 'Logo URL (null when unavailable).',
+      example: 'https://metadata.mobula.io/assets/logos/evm_8453_0x8335…',
+    }),
   })
   .openapi('TokenInfo');
 
@@ -242,10 +230,7 @@ const RouteDetailsSchema = z
       .number()
       .optional()
       .openapi({ description: 'Sum of LP fees across the route, in %.', example: 0.25 }),
-    aggregator: z
-      .string()
-      .optional()
-      .openapi({ description: 'Aggregator that picked the route.', example: 'jupiter' }),
+    aggregator: z.string().optional().openapi({ description: 'Aggregator that picked the route.', example: 'jupiter' }),
   })
   .openapi('RouteDetails');
 
@@ -366,7 +351,8 @@ const CandidateSchema = z
 
 const DataWithCandidatesSchema = BaseDataSchema.extend({
   candidates: z.array(CandidateSchema).min(1).openapi({
-    description: 'Multi-lander candidate transactions (Solana only). Sign every candidate, broadcast all of them in batch — only one will land.',
+    description:
+      'Multi-lander candidate transactions (Solana only). Sign every candidate, broadcast all of them in batch — only one will land.',
   }),
   nonceAccount: z.string().openapi({ description: 'Durable nonce account public key.' }),
   nonceAuthority: z.string().openapi({ description: 'Nonce authority public key (must co-sign).' }),
@@ -382,20 +368,15 @@ const DataWithErrorSchema = BaseDataSchema.extend({
 }).openapi('SwapQuoteError');
 
 export const SwapQuotingDataSchema = z
-  .union([
-    DataWithSolanaSchema,
-    DataWithEVMSchema,
-    DataWithTonSchema,
-    DataWithCandidatesSchema,
-    DataWithErrorSchema,
-  ])
+  .union([DataWithSolanaSchema, DataWithEVMSchema, DataWithTonSchema, DataWithCandidatesSchema, DataWithErrorSchema])
   .openapi('SwapQuotingData');
 
 export const SwapQuotingOutputSchema = z
   .object({
     data: SwapQuotingDataSchema,
     error: z.string().optional().openapi({
-      description: 'Set on routing failures (no route, slippage too tight, upstream timeout). The `data` block still carries `requestId` for support.',
+      description:
+        'Set on routing failures (no route, slippage too tight, upstream timeout). The `data` block still carries `requestId` for support.',
     }),
   })
   .openapi('SwapQuotingResponse');
